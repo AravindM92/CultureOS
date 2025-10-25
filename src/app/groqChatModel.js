@@ -1,5 +1,8 @@
 const Groq = require("groq-sdk");
 
+// Temporary SSL fix for corporate networks
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
 /**
  * Groq Chat Model adapter for Teams AI Library
  * This class implements the interface expected by Teams AI Library's ChatPrompt

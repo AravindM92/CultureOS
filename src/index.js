@@ -1,3 +1,6 @@
+// Temporary SSL fix for corporate networks
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
 const app = require("./app/app");
 
 // Start the application
