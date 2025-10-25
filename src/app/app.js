@@ -1,6 +1,4 @@
-const { ManagedIdentityCredential } = require("@azure/identity");
 const { App } = require("@microsoft/teams.apps");
-const { ChatPrompt } = require("@microsoft/teams.ai");
 const { LocalStorage } = require("@microsoft/teams.common");
 const { GroqChatModel } = require("./groqChatModel");
 const { MessageActivity } = require('@microsoft/teams.api');
@@ -20,61 +18,39 @@ function loadInstructions() {
 // Load instructions once at startup
 const instructions = loadInstructions();
 
-const createTokenFactory = () => {
-  return async (scope, tenantId) => {
-    const managedIdentityCredential = new ManagedIdentityCredential({
-        clientId: process.env.CLIENT_ID
-      });
-    const scopes = Array.isArray(scope) ? scope : [scope];
-    const tokenResponse = await managedIdentityCredential.getToken(scopes, {
-      tenantId: tenantId
-    });
-   
-    return tokenResponse.token;
-  };
-};
-
-// Configure authentication using TokenCredentials
-const tokenCredentials = {
-  clientId: process.env.CLIENT_ID || '',
-  token: createTokenFactory()
-};
-
-const credentialOptions = config.MicrosoftAppType === "UserAssignedMsi" ? { ...tokenCredentials } : undefined;
-
-// Create the app with storage
+// Create the app for playground environment (simplified)
 const app = new App({
-  ...credentialOptions,
   storage
 });
 
 // Handle incoming messages
-app.on('message', async ({ send, stream, activity }) => {
-  // DEBUG: Log incoming message details
-  console.log(`[${new Date().toISOString()}] Message received:`);
-  console.log(`- From: ${activity.from.name} (${activity.from.id})`);
-  console.log(`- Conversation: ${activity.conversation.id}`);
-  console.log(`- Text: ${activity.text}`);
-  console.log(`- Service URL: ${activity.serviceUrl}`);
-  console.log(`- Channel ID: ${activity.channelId}`);
-  
-  //Get conversation history
-  const conversationKey = `${activity.conversation.id}/${activity.from.id}`;
-  const messages = storage.get(conversationKey) || [];
+app.on('message', async ({ send, activity }) => {
+  if (!config.groqApiKey) {
+    await send("Groq API key not configured. Please set GROQ_API_KEY in environment.");
+    return;
+  }
 
-  // Add the current user message to the conversation history
-  messages.push({
-    role: 'user',
-    content: activity.text
-  });
+  const conversationKey = `${activity.conversation.id}/${activity.from.id}`;
+  let messages = storage.get(conversationKey) || [];
+
+  // Limit conversation history to last 10 messages to prevent memory issues
+  if (messages.length > 20) {
+    messages = messages.slice(-20);
+  }
 
   // Add system instructions if this is the first message
-  if (messages.length === 1) {
-    messages.unshift({
+  if (messages.length === 0) {
+    messages.push({
       role: 'system',
       content: instructions
     });
   }
+
+  // Add user message
+  messages.push({
+    role: 'user',
+    content: activity.text
+  });
 
   try {
     const groqModel = new GroqChatModel({
@@ -82,51 +58,25 @@ app.on('message', async ({ send, stream, activity }) => {
       model: config.groqModelName
     });
 
-    if (activity.conversation.isGroup) {
-      // If the conversation is a group chat, we need to send the final response
-      // back to the group chat
-      const response = await groqModel.sendChatCompletion(messages);
-      
-      // Add assistant response to conversation history
-      messages.push({
-        role: 'assistant',
-        content: response.content
-      });
-      
-      const responseActivity = new MessageActivity(response.content).addAiGenerated().addFeedback();
-      await send(responseActivity);
-    } else {
-      // For 1:1 conversations, use streaming
-      let fullResponse = "";
-      await groqModel.sendStreamingChatCompletion(messages, {
-        onChunk: (chunk) => {
-          fullResponse += chunk;
-          stream.emit(chunk);
-        },
-      });
-      
-      // Add assistant response to conversation history
-      messages.push({
-        role: 'assistant',
-        content: fullResponse
-      });
-      
-      // We wrap the final response with an AI Generated indicator
-      stream.emit(new MessageActivity().addAiGenerated().addFeedback());
-    }
+    const response = await groqModel.sendChatCompletion(messages);
+    
+    // Add assistant response to conversation history
+    messages.push({
+      role: 'assistant',
+      content: response.content
+    });
     
     // Store updated conversation history
     storage.set(conversationKey, messages);
+    
+    const responseActivity = new MessageActivity(response.content).addAiGenerated().addFeedback();
+    await send(responseActivity);
   } catch (error) {
-    console.error(error);
-    await send("The agent encountered an error or bug.");
-    await send("To continue to run this agent, please fix the agent source code.");
+    console.error('Groq API Error:', error.message);
+    await send("Sorry, I encountered an error processing your request. Please try again.");
   }
 });
 
-app.on('message.submit.feedback', async ({ activity }) => {
-  //add custom feedback process logic here
-  console.log("Your feedback is " + JSON.stringify(activity.value));
-});
+
 
 module.exports = app;

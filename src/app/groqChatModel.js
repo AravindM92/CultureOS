@@ -9,7 +9,7 @@ class GroqChatModel {
     this.groq = new Groq({
       apiKey: options.apiKey
     });
-    this.model = options.model || "llama-3.1-70b-versatile";
+    this.model = options.model || "llama-3.1-8b-instant";
     this.temperature = options.temperature || 0.7;
     this.maxTokens = options.maxTokens || 1000;
   }
@@ -42,44 +42,6 @@ class GroqChatModel {
     } catch (error) {
       console.error("Groq API Error:", error);
       throw new Error(`Groq API call failed: ${error.message}`);
-    }
-  }
-
-  /**
-   * Send a streaming chat completion request to Groq
-   * @param {Array} messages - Array of message objects
-   * @param {Object} options - Additional options with onChunk callback
-   * @returns {Promise<void>}
-   */
-  async sendStreamingChatCompletion(messages, options = {}) {
-    try {
-      const stream = await this.groq.chat.completions.create({
-        messages: messages,
-        model: this.model,
-        temperature: this.temperature,
-        max_tokens: this.maxTokens,
-        stream: true
-      });
-
-      let fullContent = "";
-      
-      for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || "";
-        if (content) {
-          fullContent += content;
-          if (options.onChunk) {
-            options.onChunk(content);
-          }
-        }
-      }
-
-      return {
-        content: fullContent,
-        model: this.model
-      };
-    } catch (error) {
-      console.error("Groq Streaming API Error:", error);
-      throw new Error(`Groq streaming API call failed: ${error.message}`);
     }
   }
 }

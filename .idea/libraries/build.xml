@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="build">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/appPackage/build/appPackage.local.zip!/" />
+      <root url="jar://$PROJECT_DIR$/appPackage/build/Thunai-Teams-App-Updated.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
