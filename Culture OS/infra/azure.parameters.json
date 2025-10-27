@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceBaseName": {
+      "value": "bot${{RESOURCE_SUFFIX}}"
+    },
+    "groqApiKey": {
+      "value": "${{SECRET_GROQ_API_KEY}}"
+    },
+    "groqModelName": {
+      "value": "${{GROQ_MODEL_NAME}}"
+    },
+    "webAppSKU": {
+      "value": "B1"
+    },
+    "botDisplayName": {
+      "value": "Thun.ai"
+    }
+  }
+}

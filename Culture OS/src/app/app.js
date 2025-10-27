@@ -1,0 +1,316 @@
+const { ManagedIdentityCredential } = require("@azure/identity");
+const { App } = require("@microsoft/teams.apps");
+const { ChatPrompt } = require("@microsoft/teams.ai");
+const { LocalStorage } = require("@microsoft/teams.common");
+const { GroqChatModel } = require("./groqChatModel");
+const { MessageActivity } = require('@microsoft/teams.api');
+const fs = require('fs');
+const path = require('path');
+const config = require("../config");
+const ThunaiAPIClient = require('./apiClient');  // Our API client integration
+const MomentsManager = require('./momentsManager');  // Moments functionality
+const MockThunaiResponses = require('./mockResponses');  // Fallback responses
+const api = new ThunaiAPIClient();
+
+// Create storage for conversation history
+const storage = new LocalStorage();
+
+// Initialize moments manager and mock responses
+const groqModel = new GroqChatModel(config.groqApiKey);
+const momentsManager = new MomentsManager(storage, groqModel);
+const mockResponses = new MockThunaiResponses();
+
+// Load instructions from file on initialization
+function loadInstructions() {
+  const instructionsFilePath = path.join(__dirname, "instructions.txt");
+  return fs.readFileSync(instructionsFilePath, 'utf-8').trim();
+}
+
+// Load instructions once at startup
+const instructions = loadInstructions();
+
+const createTokenFactory = () => {
+  return async (scope, tenantId) => {
+    const managedIdentityCredential = new ManagedIdentityCredential({
+        clientId: process.env.CLIENT_ID
+      });
+    const scopes = Array.isArray(scope) ? scope : [scope];
+    const tokenResponse = await managedIdentityCredential.getToken(scopes, {
+      tenantId: tenantId
+    });
+   
+    return tokenResponse.token;
+  };
+};
+
+// Configure authentication using TokenCredentials
+const tokenCredentials = {
+  clientId: process.env.CLIENT_ID || '',
+  token: createTokenFactory()
+};
+
+const credentialOptions = config.MicrosoftAppType === "UserAssignedMsi" ? { ...tokenCredentials } : undefined;
+
+// Create the app with storage
+const app = new App({
+  ...credentialOptions,
+  storage
+});
+
+// Handle incoming messages
+app.on('message', async ({ send, stream, activity }) => {
+  // DEBUG: Log incoming message details
+  console.log(`[${new Date().toISOString()}] Message received:`);
+  console.log(`- From: ${activity.from.name} (${activity.from.id})`);
+  console.log(`- Conversation: ${activity.conversation.id}`);
+  console.log(`- Text: ${activity.text}`);
+  console.log(`- Service URL: ${activity.serviceUrl}`);
+  console.log(`- Channel ID: ${activity.channelId}`);
+  
+  // Track active conversations for proactive messaging
+  const conversationKey = `${activity.conversation.id}_${activity.from.id}`;
+  activeConversations.set(conversationKey, {
+    send: send,
+    userName: activity.from.name,
+    conversationId: activity.conversation.id,
+    userId: activity.from.id
+  });
+  
+  // ==========================================
+  // CULTURE OS MOMENTS MODULE HANDLING
+  // ==========================================
+  
+  // Check for [Moments] command (admin only)
+  if (activity.text && activity.text.toLowerCase().includes('[moments]')) {
+    try {
+      const isAdmin = await api.isAdmin(activity.from.id);
+      
+      if (!isAdmin) {
+        await send("Sorry, only admins can create moments using the [Moments] command. 🔒");
+        return;
+      }
+      
+      // Parse moment details from the message
+      const momentText = activity.text.replace(/\[moments\]/i, '').trim();
+      
+      if (!momentText) {
+        await send("Please provide moment details after [Moments]. Example: [Moments] John is celebrating his 10th work anniversary on November 15, 2025");
+        return;
+      }
+      
+      // Analyze the moment using AI
+      const analysis = await api.analyzeMomentText(momentText);
+      if (!analysis) {
+        await send("I couldn't understand the moment details. Please try rephrasing.");
+        return;
+      }
+      
+      // Store the pending moment for confirmation
+      const pendingMomentKey = `pending_moment_${activity.conversation.id}_${activity.from.id}`;
+      storage.set(pendingMomentKey, {
+        text: momentText,
+        analysis: analysis,
+        from: activity.from,
+        timestamp: new Date().toISOString()
+      });
+      
+      const categoryEmoji = {
+        'welcome': '🤝',
+        'celebration': '🎉', 
+        'farewell': '💔'
+      }[analysis.category] || '🎯';
+      
+      await send(`I've analyzed your moment: "${momentText}"\n\n${categoryEmoji} **${analysis.category.toUpperCase()}** moment detected\n📅 Type: ${analysis.moment_type.replace('_', ' ')}\n👤 Celebrant: ${analysis.celebrant_name || 'Not specified'}\n\n✅ Content looks good!\n\nShould I create this moment and notify the team when appropriate? Reply with **Yes** or **No**.`);
+      return;
+      
+    } catch (error) {
+      console.error('Error handling [Moments] command:', error);
+      await send("Sorry, I encountered an error processing your moment. Please try again.");
+      return;
+    }
+  }
+  
+  // Check for moment confirmation (Yes/No responses)
+  const pendingMomentKey = `pending_moment_${activity.conversation.id}_${activity.from.id}`;
+  const pendingMoment = storage.get(pendingMomentKey);
+  
+  if (pendingMoment && activity.text && (activity.text.toLowerCase() === 'yes' || activity.text.toLowerCase() === 'no')) {
+    try {
+      if (activity.text.toLowerCase() === 'yes') {
+        // Create moment using API
+        const result = await api.processNewMoment(activity.from.id, pendingMoment.text);
+        
+        if (result.success) {
+          await send(result.message);
+        } else {
+          await send(`❌ Failed to create moment: ${result.error}`);
+        }
+        
+        // Clear pending moment
+        storage.delete(pendingMomentKey);
+        return;
+        
+      } else {
+        await send("No problem! The moment was not created. Feel free to try again with [Moments] when you're ready. 👍");
+        storage.delete(pendingMomentKey);
+        return;
+      }
+      
+    } catch (error) {
+      console.error('Error confirming moment:', error);
+      await send("Sorry, I encountered an error. Please try again.");
+      return;
+    }
+  }
+  
+  // ==========================================
+  // REGULAR AI CONVERSATION HANDLING
+  // ==========================================
+  
+  //Get conversation history
+  const storageKey = `${activity.conversation.id}/${activity.from.id}`;
+  const messages = storage.get(storageKey) || [];
+
+  // Add the current user message to the conversation history
+  messages.push({
+    role: 'user',
+    content: activity.text
+  });
+
+  // Add system instructions if this is the first message
+  if (messages.length === 1) {
+    messages.unshift({
+      role: 'system',
+      content: instructions
+    });
+  }
+
+  try {
+    const groqModel = new GroqChatModel({
+      apiKey: config.groqApiKey,
+      model: config.groqModelName
+    });
+
+    if (activity.conversation.isGroup) {
+      // If the conversation is a group chat, we need to send the final response
+      // back to the group chat
+      const response = await groqModel.sendChatCompletion(messages);
+      
+      // Add assistant response to conversation history
+      messages.push({
+        role: 'assistant',
+        content: response.content
+      });
+      
+      const responseActivity = new MessageActivity(response.content).addAiGenerated().addFeedback();
+      await send(responseActivity);
+    } else {
+      // For 1:1 conversations, use streaming
+      let fullResponse = "";
+      await groqModel.sendStreamingChatCompletion(messages, {
+        onChunk: (chunk) => {
+          fullResponse += chunk;
+          stream.emit(chunk);
+        },
+      });
+      
+      // Add assistant response to conversation history
+      messages.push({
+        role: 'assistant',
+        content: fullResponse
+      });
+      
+      // We wrap the final response with an AI Generated indicator
+      stream.emit(new MessageActivity().addAiGenerated().addFeedback());
+    }
+    
+    // Store updated conversation history
+    storage.set(storageKey, messages);
+  } catch (error) {
+    console.error(error);
+    await send("The agent encountered an error or bug.");
+    await send("To continue to run this agent, please fix the agent source code.");
+  }
+});
+
+app.on('message.submit.feedback', async ({ activity }) => {
+  //add custom feedback process logic here
+  console.log("Your feedback is " + JSON.stringify(activity.value));
+});
+
+// Track active conversations for proactive messaging
+const activeConversations = new Map();
+
+// Proactive messaging function
+async function sendProactiveMessage() {
+  console.log('🤖 Sending proactive message to all active conversations...');
+  
+  for (const [key, conversationInfo] of activeConversations) {
+    try {
+      const proactiveMessages = [
+        "🌟 Hope you're having an amazing day! Any wins or moments worth celebrating?",
+        "✨ Just checking in! How are things going? I'm here if you want to share any good news!",
+        "🎯 Hey there! Any victories, big or small, that deserve some recognition today?"
+      ];
+      
+      const randomMessage = proactiveMessages[Math.floor(Math.random() * proactiveMessages.length)];
+      const activity = new MessageActivity(`${randomMessage}\n\n*[Your Team Mate - Thun.ai 🎯]*`).addAiGenerated();
+      
+      await conversationInfo.send(activity);
+      console.log(`📤 Sent proactive message to ${conversationInfo.userName}`);
+    } catch (error) {
+      console.error('Error sending proactive message:', error);
+    }
+  }
+}
+
+// Check for upcoming moments and send notifications
+async function checkAndNotifyMoments() {
+  console.log('🔍 Checking for upcoming moments...');
+  const upcomingMoments = momentsManager.getMomentsForNotification(1); // 1 day ahead
+  
+  for (const moment of upcomingMoments) {
+    console.log(`🎉 Found upcoming moment: ${moment.celebrant_name} - ${moment.event_type}`);
+    
+    try {
+      const notification = await momentsManager.generateMomentNotification(moment);
+      
+      // Send to all active conversations
+      for (const [key, conversationInfo] of activeConversations) {
+        const momentActivity = new MessageActivity(`${notification}\n\n*[Your Team Mate - Thun.ai 🎯]*`).addAiGenerated();
+        await conversationInfo.send(momentActivity);
+        console.log(`🎊 Sent moment notification to ${conversationInfo.userName}`);
+      }
+
+      // Mark as notified
+      moment.notificationSent = true;
+      const activeMoments = storage.get('active_moments') || [];
+      const momentIndex = activeMoments.findIndex(m => m.id === moment.id);
+      if (momentIndex >= 0) {
+        activeMoments[momentIndex] = moment;
+        storage.set('active_moments', activeMoments);
+      }
+
+    } catch (error) {
+      console.error('Error sending moment notification:', error);
+    }
+  }
+}
+
+// Start proactive messaging every 24 hours (production setting)
+const proactiveInterval = setInterval(sendProactiveMessage, 24 * 60 * 60 * 1000); // 24 hours
+console.log('🔄 Proactive messaging started - sending messages every 24 hours');
+
+// Check for moments every 30 seconds (for testing) - in production this would be daily
+const momentsInterval = setInterval(checkAndNotifyMoments, 30000);
+console.log('🎉 Moments checking started - checking every 30 seconds (testing mode)');
+
+// Cleanup on app shutdown
+process.on('SIGINT', () => {
+  clearInterval(proactiveInterval);
+  clearInterval(momentsInterval);
+  console.log('🛑 Proactive messaging and moments checking stopped');
+  process.exit(0);
+});
+
+module.exports = app;

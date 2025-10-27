@@ -1,11 +1,5 @@
 {
-    "debug.onTaskErrors": "abort",
-    "json.schemas": [
-        {
-            "fileMatch": [
-                "/aad.*.json"
-            ],
-            "schema": {}
-        }
-    ]
+    "chat.agent.maxRequests": 5,
+    "simpleBrowser.focusLockIndicator.enabled": false,
+    "workbench.externalBrowser": "chrome"
 }
