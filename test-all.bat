@@ -6,9 +6,11 @@ echo.
 echo Running comprehensive tests...
 echo.
 
-:: Run the PowerShell test script
-powershell -ExecutionPolicy Bypass -File "test-all.ps1"
+:: Get the directory where this batch file is located
+set "SCRIPT_DIR=%~dp0"
+
+:: Run the PowerShell test script from the same directory
+powershell -ExecutionPolicy Bypass -File "%SCRIPT_DIR%test-all.ps1"
 
 echo.
-echo Testing completed.
-pause
+echo Testing completed. Terminal is ready for new commands.

@@ -55,7 +55,8 @@ Write-Host ""
 Write-Host "🔍 Test 4: Groq API Test" -ForegroundColor Blue
 Write-Host "----------------------------------------" -ForegroundColor Gray
 try {
-    Set-Location "C:\POC\Culture OS\Culture OS"
+    $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+    Set-Location "$scriptDir\Culture OS"
     $groqResult = node test-groq.js 2>&1
     if ($groqResult -like "*SUCCESS*") {
         Write-Host "✅ Groq API: WORKING" -ForegroundColor Green
@@ -106,7 +107,8 @@ Write-Host ""
 # Test 7: Database Connectivity
 Write-Host "🔍 Test 7: Database Connectivity" -ForegroundColor Blue
 Write-Host "----------------------------------------" -ForegroundColor Gray
-$dbPath = "C:\POC\Culture OS\Culture OS\database\thunai_culture.db"
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$dbPath = "$scriptDir\database\thunai_culture.db"
 if (Test-Path $dbPath) {
     Write-Host "✅ Database File: EXISTS" -ForegroundColor Green
     $dbSize = (Get-Item $dbPath).Length

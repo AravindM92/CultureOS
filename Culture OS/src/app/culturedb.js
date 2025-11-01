@@ -9,8 +9,8 @@ const path = require('path');
 
 class CultureOSDatabase {
     constructor() {
-        // Path to our SQLite database
-        this.dbPath = path.resolve(__dirname, '..', '..', '..', 'thunai_culture.db');
+        // Path to our shared SQLite database - relative to project root
+        this.dbPath = path.resolve(__dirname, '..', '..', '..', '..', 'database', 'thunai_culture.db');
         this.db = null;
     }
 

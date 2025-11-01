@@ -1,5 +1,5 @@
 {
-    "chat.agent.maxRequests": 5,
+    "chat.agent.maxRequests": 100,
     "simpleBrowser.focusLockIndicator.enabled": false,
     "workbench.externalBrowser": "chrome"
 }

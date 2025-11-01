@@ -1,24 +1,18 @@
-@echo off@echo off
-
-echo ========================================echo ========================================
-
-echo    STOPPING THUNAI CULTURE OS SERVICESecho    STOPPING THUNAI CULTURE OS SERVICES
-
-echo ========================================echo ========================================
-
-echo.echo.
+@echo off
+echo ========================================
+echo    STOPPING THUNAI CULTURE OS SERVICES
+echo ========================================
+echo.
 
 echo Launching PowerShell stop script...
+echo.
 
-:: Run the PowerShell stop scriptecho.
+:: Get the directory where this batch file is located
+set "SCRIPT_DIR=%~dp0"
 
-powershell -ExecutionPolicy Bypass -File "stop-all.ps1"
+:: Run the PowerShell stop script from the same directory
+powershell -ExecutionPolicy Bypass -File "%SCRIPT_DIR%stop-all.ps1"
 
-:: Run the PowerShell stop script
-
-echo.powershell -ExecutionPolicy Bypass -File "stop-all.ps1"
-
-pause
 echo.
 echo Stop script completed.
-pause
+echo All services stopped. Terminal is ready for new commands.
