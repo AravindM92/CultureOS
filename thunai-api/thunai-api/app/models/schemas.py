@@ -4,34 +4,27 @@ from datetime import date
 
 
 class UserCreate(BaseModel):
+    teams_user_id: str
     name: str
     email: EmailStr
-    date_of_birth: date
-    date_of_joining: date
-    last_working_date: Optional[date] = None
-    job_level: str
-    roleid: int
+    is_admin: Optional[bool] = False
 
 
 class UserUpdate(BaseModel):
+    teams_user_id: Optional[str] = None
     name: Optional[str] = None
     email: Optional[EmailStr] = None
-    date_of_birth: Optional[date] = None
-    date_of_joining: Optional[date] = None
-    last_working_date: Optional[date] = None
-    job_level: Optional[str] = None
-    roleid: Optional[int] = None
+    is_admin: Optional[bool] = None
 
 
 class UserResponse(BaseModel):
     id: int
+    teams_user_id: str
     name: str
     email: EmailStr
-    date_of_birth: date
-    date_of_joining: date
-    last_working_date: Optional[date]
-    job_level: str
-    roleid: int
+    is_admin: bool
+    created_at: str
+    updated_at: str
 
     class Config:
         from_attributes = True
@@ -91,44 +84,34 @@ class PaginationParams(BaseModel):
 # =====================================================
 
 class MomentCreate(BaseModel):
-    user_id: int
-    celebration_date: date
-    moment_type: str  # 'birthday', 'work_anniversary', 'lwd', etc.
-    moment_category: str  # 'welcome', 'celebration', 'farewell'
-    title: str
+    person_name: str  # Must match a user.name from users table
+    moment_type: str  # 'birthday', 'work_anniversary', 'lwd', 'promotion', 'new_hire', 'achievement', 'other'
+    moment_date: date
     description: Optional[str] = None
-    created_by: int  # Admin user ID
-    celebrant_user_id: Optional[int] = None  # Who is being celebrated
-    notification_days: Optional[int] = 1  # Days before to notify team
+    created_by: str  # Teams user ID of admin who created it
 
 
 class MomentUpdate(BaseModel):
-    user_id: Optional[int] = None
-    celebration_date: Optional[date] = None
+    person_name: Optional[str] = None
     moment_type: Optional[str] = None
-    moment_category: Optional[str] = None
-    title: Optional[str] = None
+    moment_date: Optional[date] = None
     description: Optional[str] = None
-    status: Optional[str] = None  # 'active', 'completed', 'cancelled'
-    celebrant_user_id: Optional[int] = None
-    notification_days: Optional[int] = None
+    is_active: Optional[bool] = None
+    notification_sent: Optional[bool] = None
 
 
 class MomentResponse(BaseModel):
     id: int
-    user_id: int
-    celebration_date: date
+    person_name: str
     moment_type: str
-    moment_category: Optional[str]
-    title: str
+    moment_date: date
     description: Optional[str]
-    status: str
-    created_by: int
-    celebrant_user_id: Optional[int]
-    notification_days: Optional[int]
+    created_by: str
     created_at: str
-    notified_at: Optional[str]
-    completed_at: Optional[str]
+    updated_at: str
+    is_active: bool
+    notification_sent: bool
+    tags: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -136,15 +119,18 @@ class MomentResponse(BaseModel):
 
 class GreetingCreate(BaseModel):
     moment_id: int
-    user_id: int
+    user_id: str  # teams_user_id from users table
     greeting_text: str
+    moment_type: str  # For backward compatibility
 
 
 class GreetingResponse(BaseModel):
     id: int
-    moment_id: int
-    user_id: int
+    moment_id: Optional[int]
+    user_id: Optional[str]  # teams_user_id
     greeting_text: str
+    moment_type: str
+    is_active: bool
     created_at: str
 
     class Config:

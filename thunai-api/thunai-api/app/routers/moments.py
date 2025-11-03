@@ -19,7 +19,18 @@ async def get_moments(
 
 @router.post("/", response_model=MomentResponse)
 async def create_moment(moment: MomentCreate):
-    """Create a new moment (admin only)"""
+    """
+    Create a new moment (admin only)
+    
+    CRITICAL REQUIREMENT: The person_name MUST exist in the users table.
+    Moments can only be created for team members who are already in the database.
+    
+    If the celebrant is not in the users table, you must:
+    1. First add them to the users table via POST /users/
+    2. Then create the moment
+    
+    This ensures data integrity and proper relationships between users, moments, and greetings.
+    """
     result = await moment_service.create_moment(moment)
     if not result:
         raise HTTPException(status_code=400, detail="Failed to create moment")

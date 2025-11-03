@@ -10,13 +10,15 @@ class GreetingRepository(BaseRepository):
     async def create(self, greeting_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new greeting"""
         query = """
-            INSERT INTO greetings (moment_id, user_id, greeting_text)
-            VALUES (?, ?, ?)
+            INSERT INTO greetings (moment_id, user_id, greeting_text, moment_type, is_active)
+            VALUES (?, ?, ?, ?, ?)
         """
         async with db_manager.get_connection() as conn:
             cursor = await conn.execute(
                 query,
-                (greeting_data['moment_id'], greeting_data['user_id'], greeting_data['greeting_text'])
+                (greeting_data.get('moment_id'), greeting_data.get('user_id'), 
+                 greeting_data['greeting_text'], greeting_data.get('moment_type', 'general'),
+                 greeting_data.get('is_active', True))
             )
             await conn.commit()
             greeting_id = cursor.lastrowid
@@ -30,15 +32,15 @@ class GreetingRepository(BaseRepository):
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
     
-    async def find_by_user_id(self, user_id: int, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
+    async def find_by_user_id(self, user_id: str, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
         """Find all greetings by a specific user"""
         query = "SELECT * FROM greetings WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?"
         async with db_manager.get_connection() as conn:
             cursor = await conn.execute(query, (user_id, limit, skip))
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
-    
-    async def check_existing_greeting(self, moment_id: int, user_id: int) -> bool:
+
+    async def check_existing_greeting(self, moment_id: int, user_id: str) -> bool:
         """Check if user already sent a greeting for this moment"""
         query = "SELECT id FROM greetings WHERE moment_id = ? AND user_id = ?"
         async with db_manager.get_connection() as conn:

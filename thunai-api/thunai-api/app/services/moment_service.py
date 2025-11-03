@@ -1,19 +1,32 @@
 from typing import List, Optional
 from app.services.base_service import BaseService
 from app.repositories.moment_repository import MomentRepository
+from app.repositories.user_repository import UserRepository
 from app.models.schemas import MomentResponse, MomentCreate, MomentUpdate
 from datetime import date
+from fastapi import HTTPException
 
 
 class MomentService(BaseService[MomentResponse]):
     def __init__(self):
         super().__init__(MomentRepository())
+        self.user_repository = UserRepository()
     
     def _map_to_model(self, data: dict) -> MomentResponse:
         return MomentResponse(**data)
     
     async def create_moment(self, moment_data: MomentCreate) -> Optional[MomentResponse]:
-        """Create a new moment"""
+        """Create a new moment - ONLY if celebrant exists in users table"""
+        
+        # CRITICAL VALIDATION: Check if person_name exists in users table
+        user = await self.user_repository.find_by_name(moment_data.person_name)
+        if not user:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot create moment: User '{moment_data.person_name}' not found in users table. Please add the user first."
+            )
+        
+        # User exists - proceed with moment creation
         data = moment_data.model_dump()
         result = await self.repository.create(data)
         return self._map_to_model(result) if result else None

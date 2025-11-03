@@ -15,9 +15,17 @@ class UserService(BaseService[UserResponse]):
         data = await self.repository.find_by_email(email)
         return self._map_to_model(data) if data else None
     
-    async def get_by_job_level(self, job_level: str, skip: int = 0, limit: int = 100) -> List[UserResponse]:
-        data = await self.repository.find_by_job_level(job_level, skip, limit)
+    async def get_by_admin_status(self, is_admin: bool, skip: int = 0, limit: int = 100) -> List[UserResponse]:
+        data = await self.repository.find_by_admin_status(is_admin, skip, limit)
         return [self._map_to_model(item) for item in data]
+    
+    async def get_by_name(self, name: str) -> Optional[UserResponse]:
+        data = await self.repository.find_by_name(name)
+        return self._map_to_model(data) if data else None
+    
+    async def get_by_teams_user_id(self, teams_user_id: str) -> Optional[UserResponse]:
+        data = await self.repository.find_by_teams_user_id(teams_user_id)
+        return self._map_to_model(data) if data else None
     
     async def create_user(self, user_create: UserCreate) -> UserResponse:
         user_data = user_create.model_dump()

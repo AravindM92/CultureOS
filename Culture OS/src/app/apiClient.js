@@ -23,25 +23,53 @@ class ThunaiAPIClient {
 
     async getUserByTeamsId(teamsUserId) {
         try {
-            // Since we don't have teams_user_id search in API yet, get all users and filter
-            const response = await this.client.get('/users');
-            const users = response.data;
-            return users.find(user => user.teams_user_id === teamsUserId) || null;
+            console.log(`Looking up Teams user: ${teamsUserId}`);
+            const response = await this.client.get(`/users/teams-id/${encodeURIComponent(teamsUserId)}`);
+            return response.data;
         } catch (error) {
+            if (error.response?.status === 404) {
+                console.log(`Teams user not found: ${teamsUserId}`);
+                return null;
+            }
             console.error('Error getting user by Teams ID:', error.message);
             return null;
         }
     }
 
-    async isAdmin(teamsUserId) {
+    async getUserByEmail(email) {
         try {
-            const user = await this.getUserByTeamsId(teamsUserId);
+            if (!email) return null;
+            const response = await this.client.get(`/users/email/${encodeURIComponent(email)}`);
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 404) {
+                return null;
+            }
+            console.error('Error getting user by email:', error.message);
+            return null;
+        }
+    }
+
+    async isAdmin(teamsUserId, userEmail = null) {
+        try {
+            let user = null;
+            
+            // Try email first if available
+            if (userEmail) {
+                user = await this.getUserByEmail(userEmail);
+            }
+            
+            // Fallback to Teams ID lookup
+            if (!user) {
+                user = await this.getUserByTeamsId(teamsUserId);
+            }
+            
             if (!user) return false;
             
-            // Check if user has admin role (roleid 1 is admin based on sample data)
-            return user.roleid === 1;
+            // Check if user has admin role (is_admin field)
+            return user.is_admin === true;
         } catch (error) {
-            console.error('Error checking admin status:', error.message);
+            console.error('Error checking admin status:', error);
             return false;
         }
     }
@@ -53,6 +81,63 @@ class ThunaiAPIClient {
         } catch (error) {
             console.error('Error getting all users:', error.message);
             return [];
+        }
+    }
+
+    async findUserByName(name) {
+        try {
+            const response = await this.client.get(`/users/name/${encodeURIComponent(name)}`);
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 404) {
+                return null;
+            }
+            console.error('Error finding user by name:', error.message);
+            return null;
+        }
+    }
+
+    async findUserByEmail(email) {
+        try {
+            const users = await this.getAllUsers();
+            return users.find(u => u.email.toLowerCase() === email.toLowerCase()) || null;
+        } catch (error) {
+            console.error('Error finding user by email:', error.message);
+            return null;
+        }
+    }
+
+    async searchUsers(query) {
+        try {
+            const users = await this.getAllUsers();
+            const lowerQuery = query.toLowerCase();
+            return users.filter(u => 
+                u.name.toLowerCase().includes(lowerQuery) ||
+                u.email.toLowerCase().includes(lowerQuery)
+            );
+        } catch (error) {
+            console.error('Error searching users:', error.message);
+            return [];
+        }
+    }
+
+    async createUser(userData) {
+        try {
+            // Ensure userData matches UserCreate schema
+            const userPayload = {
+                teams_user_id: userData.teams_user_id || userData.teamsUserId,
+                name: userData.name,
+                email: userData.email,
+                is_admin: userData.is_admin || false
+            };
+            
+            console.log('Creating user with payload:', userPayload);
+            const response = await this.client.post('/users/', userPayload);
+            console.log('User created successfully:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating user:', error.response?.data || error.message);
+            throw new Error(error.response?.data?.detail || 'Failed to create user');
         }
     }
 
@@ -72,11 +157,22 @@ class ThunaiAPIClient {
 
     async createMoment(momentData) {
         try {
-            const response = await this.client.post('/moments', momentData);
+            // Ensure momentData matches MomentCreate schema
+            const momentPayload = {
+                person_name: momentData.person_name,
+                moment_type: momentData.moment_type,
+                moment_date: momentData.moment_date,
+                description: momentData.description || null,
+                created_by: momentData.created_by
+            };
+            
+            console.log('Creating moment with payload:', momentPayload);
+            const response = await this.client.post('/moments/', momentPayload);
+            console.log('Moment created successfully:', response.data);
             return response.data;
         } catch (error) {
-            console.error('Error creating moment:', error.message);
-            return null;
+            console.error('Error creating moment:', error.response?.data || error.message);
+            throw new Error(error.response?.data?.detail || 'Failed to create moment');
         }
     }
 
@@ -94,13 +190,31 @@ class ThunaiAPIClient {
                 throw new Error('Only admins can create moments');
             }
 
-            // 3. Find celebrant user if name was detected
+            // 3. Find or create celebrant user if name was detected
             let celebrantUser = null;
             if (analysis.celebrant_name) {
+                console.log(`Looking for user with name: ${analysis.celebrant_name}`);
                 const allUsers = await this.getAllUsers();
+                
+                // Try exact match first
                 celebrantUser = allUsers.find(user => 
-                    user.name.toLowerCase().includes(analysis.celebrant_name.toLowerCase())
+                    user.name.toLowerCase() === analysis.celebrant_name.toLowerCase()
                 );
+                
+                // Try partial match if exact match fails
+                if (!celebrantUser) {
+                    celebrantUser = allUsers.find(user => 
+                        user.name.toLowerCase().includes(analysis.celebrant_name.toLowerCase()) ||
+                        analysis.celebrant_name.toLowerCase().includes(user.name.toLowerCase())
+                    );
+                }
+                
+                if (celebrantUser) {
+                    console.log(`Found existing user: ${celebrantUser.name} (ID: ${celebrantUser.id})`);
+                } else {
+                    console.log(`User '${analysis.celebrant_name}' not found in database`);
+                    // Don't create placeholder users automatically - let the API handle the error
+                }
             }
 
             // 4. Parse celebration date
@@ -128,20 +242,23 @@ class ThunaiAPIClient {
                 'farewell': 7
             }[analysis.category] || 1;
 
-            // 6. Create moment
+            // 6. Create moment with correct schema
+            const personName = celebrantUser?.name || analysis.celebrant_name;
+            if (!personName) {
+                throw new Error('Could not determine celebrant name from the text');
+            }
+            
             const momentData = {
-                user_id: celebrantUser?.id || adminUser.id,
-                celebration_date: celebrationDate.toISOString().split('T')[0],
+                person_name: personName,
                 moment_type: analysis.moment_type,
-                moment_category: analysis.category,
-                title: analysis.celebrant_name ? 
-                    `${analysis.celebrant_name}'s ${analysis.moment_type.replace('_', ' ')}` : 
-                    `${analysis.moment_type.replace('_', ' ')}`,
+                moment_date: celebrationDate.toISOString().split('T')[0],
                 description: momentText,
-                created_by: adminUser.id,
-                celebrant_user_id: celebrantUser?.id || null,
-                notification_days: notificationDays
+                created_by: adminUser.teams_user_id
             };
+            
+            console.log(`Creating moment for: ${personName}`);
+            console.log(`Moment type: ${analysis.moment_type}`);
+            console.log(`Date: ${celebrationDate.toISOString().split('T')[0]}`);
 
             return await this.createMoment(momentData);
 
@@ -210,7 +327,7 @@ class ThunaiAPIClient {
     // GREETINGS MANAGEMENT
     // ==========================================
 
-    async addGreeting(momentId, teamsUserId, greetingText) {
+    async addGreeting(momentId, teamsUserId, greetingText, momentType = 'general') {
         try {
             const user = await this.getUserByTeamsId(teamsUserId);
             if (!user) {
@@ -220,14 +337,16 @@ class ThunaiAPIClient {
 
             const greetingData = {
                 moment_id: momentId,
-                user_id: user.id,
-                greeting_text: greetingText
+                user_id: user.teams_user_id, // Use teams_user_id as per schema
+                greeting_text: greetingText,
+                moment_type: momentType
             };
 
-            const response = await this.client.post('/greetings', greetingData);
+            console.log('Creating greeting with payload:', greetingData);
+            const response = await this.client.post('/greetings/', greetingData);
             return response.data;
         } catch (error) {
-            console.error('Error adding greeting:', error.message);
+            console.error('Error adding greeting:', error.response?.data || error.message);
             return false;
         }
     }

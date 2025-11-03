@@ -14,24 +14,37 @@ class UserRepository(BaseRepository):
             row = await cursor.fetchone()
             return dict(row) if row else None
     
-    async def find_by_job_level(self, job_level: str, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
-        query = "SELECT * FROM users WHERE job_level = ? ORDER BY id LIMIT ? OFFSET ?"
+    async def find_by_admin_status(self, is_admin: bool, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
+        query = "SELECT * FROM users WHERE is_admin = ? ORDER BY id LIMIT ? OFFSET ?"
         async with db_manager.get_connection() as conn:
-            cursor = await conn.execute(query, (job_level, limit, skip))
+            cursor = await conn.execute(query, (is_admin, limit, skip))
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
     
+    async def find_by_name(self, name: str) -> Optional[Dict[str, Any]]:
+        query = "SELECT * FROM users WHERE name LIKE ?"
+        async with db_manager.get_connection() as conn:
+            cursor = await conn.execute(query, (f"%{name}%",))
+            row = await cursor.fetchone()
+            return dict(row) if row else None
+    
+    async def find_by_teams_user_id(self, teams_user_id: str) -> Optional[Dict[str, Any]]:
+        query = "SELECT * FROM users WHERE teams_user_id = ?"
+        async with db_manager.get_connection() as conn:
+            cursor = await conn.execute(query, (teams_user_id,))
+            row = await cursor.fetchone()
+            return dict(row) if row else None
+    
     async def create(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
         query = """
-        INSERT INTO users (name, email, date_of_birth, date_of_joining, last_working_date, job_level, roleid)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (teams_user_id, name, email, is_admin, created_at, updated_at)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """
         async with db_manager.get_connection() as conn:
             cursor = await conn.execute(
                 query,
-                (user_data['name'], user_data['email'], user_data['date_of_birth'],
-                 user_data['date_of_joining'], user_data.get('last_working_date'),
-                 user_data['job_level'], user_data['roleid'])
+                (user_data['teams_user_id'], user_data['name'], user_data['email'], 
+                 user_data.get('is_admin', False))
             )
             await conn.commit()
             user_id = cursor.lastrowid

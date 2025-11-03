@@ -10,20 +10,28 @@ class MomentRepository(BaseRepository):
     
     async def create(self, moment_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new moment"""
-        query = """
-            INSERT INTO moments (user_id, celebration_date, moment_type, moment_category, title, description, created_by, celebrant_user_id, notification_days)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """
+        # First validate that person_name exists in users table
+        user_query = "SELECT teams_user_id FROM users WHERE name = ?"
         async with db_manager.get_connection() as conn:
+            cursor = await conn.execute(user_query, (moment_data['person_name'],))
+            user = await cursor.fetchone()
+            
+            if not user:
+                raise ValueError(f"User '{moment_data['person_name']}' not found in users table. Please add the user first.")
+            
+            # Create the moment with correct column names
+            query = """
+                INSERT INTO moments (person_name, moment_type, moment_date, description, created_by, created_at, updated_at, is_active, notification_sent)
+                VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 0)
+            """
             cursor = await conn.execute(
                 query,
-                (moment_data['user_id'], moment_data['celebration_date'], moment_data['moment_type'],
-                 moment_data.get('moment_category', 'celebration'), moment_data['title'], 
-                 moment_data.get('description'), moment_data['created_by'],
-                 moment_data.get('celebrant_user_id'), moment_data.get('notification_days', 1))
+                (moment_data['person_name'], moment_data['moment_type'], moment_data['moment_date'],
+                 moment_data.get('description'), moment_data['created_by'])
             )
             await conn.commit()
             moment_id = cursor.lastrowid
+            print(f"✅ Moment created in database with ID: {moment_id}")
             return await self.find_by_id(moment_id)
     
     async def update(self, moment_id: int, update_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -50,7 +58,7 @@ class MomentRepository(BaseRepository):
     
     async def find_by_user_id(self, user_id: int, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
         """Find moments by user ID"""
-        query = "SELECT * FROM moments WHERE user_id = ? ORDER BY celebration_date DESC LIMIT ? OFFSET ?"
+        query = "SELECT * FROM moments WHERE person_name IN (SELECT name FROM users WHERE id = ?) ORDER BY moment_date DESC LIMIT ? OFFSET ?"
         async with db_manager.get_connection() as conn:
             cursor = await conn.execute(query, (user_id, limit, skip))
             rows = await cursor.fetchall()
@@ -58,7 +66,7 @@ class MomentRepository(BaseRepository):
     
     async def find_by_type(self, moment_type: str, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
         """Find moments by type"""
-        query = "SELECT * FROM moments WHERE moment_type = ? ORDER BY celebration_date DESC LIMIT ? OFFSET ?"
+        query = "SELECT * FROM moments WHERE moment_type = ? ORDER BY moment_date DESC LIMIT ? OFFSET ?"
         async with db_manager.get_connection() as conn:
             cursor = await conn.execute(query, (moment_type, limit, skip))
             rows = await cursor.fetchall()
@@ -66,9 +74,10 @@ class MomentRepository(BaseRepository):
     
     async def find_by_status(self, status: str, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
         """Find moments by status"""
-        query = "SELECT * FROM moments WHERE status = ? ORDER BY celebration_date DESC LIMIT ? OFFSET ?"
+        query = "SELECT * FROM moments WHERE is_active = ? ORDER BY moment_date DESC LIMIT ? OFFSET ?"
         async with db_manager.get_connection() as conn:
-            cursor = await conn.execute(query, (status, limit, skip))
+            is_active = 1 if status == 'active' else 0
+            cursor = await conn.execute(query, (is_active, limit, skip))
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
     
@@ -76,9 +85,9 @@ class MomentRepository(BaseRepository):
         """Find upcoming moments in the next N days"""
         query = """
             SELECT * FROM moments 
-            WHERE status = 'active' 
-            AND celebration_date BETWEEN date('now') AND date('now', '+' || ? || ' days')
-            ORDER BY celebration_date ASC
+            WHERE is_active = 1 
+            AND moment_date BETWEEN date('now') AND date('now', '+' || ? || ' days')
+            ORDER BY moment_date ASC
         """
         async with db_manager.get_connection() as conn:
             cursor = await conn.execute(query, (days,))
@@ -89,8 +98,8 @@ class MomentRepository(BaseRepository):
         """Find moments within a date range"""
         query = """
             SELECT * FROM moments 
-            WHERE celebration_date BETWEEN ? AND ?
-            ORDER BY celebration_date ASC
+            WHERE moment_date BETWEEN ? AND ?
+            ORDER BY moment_date ASC
         """
         async with db_manager.get_connection() as conn:
             cursor = await conn.execute(query, (start_date, end_date))
@@ -99,7 +108,7 @@ class MomentRepository(BaseRepository):
     
     async def find_by_category(self, category: str, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
         """Find moments by category (welcome/celebration/farewell)"""
-        query = "SELECT * FROM moments WHERE moment_category = ? ORDER BY celebration_date DESC LIMIT ? OFFSET ?"
+        query = "SELECT * FROM moments WHERE moment_type = ? ORDER BY moment_date DESC LIMIT ? OFFSET ?"
         async with db_manager.get_connection() as conn:
             cursor = await conn.execute(query, (category, limit, skip))
             rows = await cursor.fetchall()
@@ -110,11 +119,11 @@ class MomentRepository(BaseRepository):
         query = """
             SELECT m.*, u.name as celebrant_name, u.teams_user_id as celebrant_teams_id
             FROM moments m
-            LEFT JOIN users u ON m.celebrant_user_id = u.id
-            WHERE m.status = 'active' 
-            AND date(m.celebration_date, '-' || m.notification_days || ' days') = ?
-            AND m.notified_at IS NULL
-            ORDER BY m.celebration_date ASC
+            LEFT JOIN users u ON m.person_name = u.name
+            WHERE m.is_active = 1 
+            AND m.moment_date = ?
+            AND m.notification_sent = 0
+            ORDER BY m.moment_date ASC
         """
         async with db_manager.get_connection() as conn:
             cursor = await conn.execute(query, (target_date,))

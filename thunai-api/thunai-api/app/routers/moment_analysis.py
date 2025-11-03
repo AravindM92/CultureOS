@@ -36,9 +36,10 @@ async def analyze_moment_text(request: MomentAnalysisRequest):
     
     # Extract celebrant name (first capitalized word that's likely a name)
     name_patterns = [
-        r"(\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+(?:is|has|will|'s)",
-        r"(\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+(?:birthday|anniversary|joining|leaving)",
-        r"(?:for|to)\s+(\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)"
+        r"^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+(?:is|has|will|'s|won|received|got|achieved)",
+        r"([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+(?:birthday|anniversary|joining|leaving)",
+        r"(?:for|to)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)",
+        r"^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s"  # Name at start followed by space
     ]
     
     for pattern in name_patterns:
@@ -58,6 +59,7 @@ async def analyze_moment_text(request: MomentAnalysisRequest):
         "birthday": ["birthday", "born", "birth", "bday"],
         "work_anniversary": ["anniversary", "years with", "years at", "work anniversary"],
         "promotion": ["promoted", "promotion", "new role", "advanced"],
+        "achievement": ["won", "award", "recognition", "achievement", "accomplished", "excellence"],
         "project_success": ["completed", "achieved", "success", "milestone", "project"],
         
         # FAREWELL
@@ -72,6 +74,7 @@ async def analyze_moment_text(request: MomentAnalysisRequest):
         "birthday": "celebration",
         "work_anniversary": "celebration",
         "promotion": "celebration",
+        "achievement": "celebration",
         "project_success": "celebration",
         "lwd": "farewell",
         "farewell": "farewell",

@@ -30,6 +30,7 @@
         "@microsoft/teams.apps": "^2.0.0",
         "@microsoft/teams.common": "^2.0.0",
         "axios": "^1.12.2",
+        "botbuilder": "^4.23.3",
         "groq-sdk": "^0.7.0",
         "sqlite": "^5.1.1",
         "sqlite3": "^5.1.7"
