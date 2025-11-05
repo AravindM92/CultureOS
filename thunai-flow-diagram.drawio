@@ -1,0 +1,251 @@
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="5.0" version="22.1.16" etag="abc123" type="device">
+  <diagram name="Thun.ai Flow Diagram" id="thunai-flow">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="Thun.ai Culture OS - Process Flow Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1;fontColor=#0277BD;" vertex="1" parent="1">
+          <mxGeometry x="450" y="20" width="500" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Sample Input -->
+        <mxCell id="sample-input" value="Sample: &quot;MuthuA celebrating bday nov 6th&quot;" style="text;html=1;strokeColor=#FF9800;fillColor=#FFF3E0;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="70" width="500" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Lane Headers -->
+        <mxCell id="lane1-header" value="User (Teams)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#388E3C;fontSize=16;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="120" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="lane2-header" value="Thun.ai Bot" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontSize=16;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="270" y="120" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="lane3-header" value="Groq LLM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;fontSize=16;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="490" y="120" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="lane4-header" value="Thun.ai API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;fontSize=16;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="710" y="120" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="lane5-header" value="Database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#F44336;fontSize=16;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="930" y="120" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="lane6-header" value="Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;fontSize=16;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="120" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Lane Separators -->
+        <mxCell id="sep1" value="" style="endArrow=none;html=1;strokeColor=#CCCCCC;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="270" y="170" as="sourcePoint" />
+            <mxPoint x="270" y="1100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="sep2" value="" style="endArrow=none;html=1;strokeColor=#CCCCCC;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="490" y="170" as="sourcePoint" />
+            <mxPoint x="490" y="1100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="sep3" value="" style="endArrow=none;html=1;strokeColor=#CCCCCC;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="710" y="170" as="sourcePoint" />
+            <mxPoint x="710" y="1100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="sep4" value="" style="endArrow=none;html=1;strokeColor=#CCCCCC;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="930" y="170" as="sourcePoint" />
+            <mxPoint x="930" y="1100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="sep5" value="" style="endArrow=none;html=1;strokeColor=#CCCCCC;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1150" y="170" as="sourcePoint" />
+            <mxPoint x="1150" y="1100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Process Steps -->
+        
+        <!-- Step 1: User sends message -->
+        <mxCell id="step1" value="1. Send Message&#xa;&quot;MuthuA celebrating&#xa;bday nov 6th&quot;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="70" y="200" width="160" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 2: Bot receives -->
+        <mxCell id="step2" value="2. Receive Message&#xa;Log activity&#xa;Get conversation history" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="200" width="160" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 3: Process with LLM -->
+        <mxCell id="step3" value="3. Process with LLM&#xa;Send conversation&#xa;to Groq API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="300" width="160" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 4: LLM Processing -->
+        <mxCell id="step4" value="4. AI Processing&#xa;Normalize input:&#xa;&quot;Happy birthday to MuthuA!&#xa;His birthday is Nov 6th&quot;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="510" y="300" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 5: Bot processes response -->
+        <mxCell id="step5" value="5. Parse LLM Response&#xa;Detect celebration&#xa;Extract: MuthuA, birthday, Nov 6" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="420" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 6: Send to user -->
+        <mxCell id="step6" value="6. Send AI Response&#xa;to User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="540" width="160" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 7: User receives -->
+        <mxCell id="step7" value="7. Receive Response&#xa;&quot;Happy birthday to MuthuA!&#xa;His birthday is Nov 6th&quot;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="70" y="540" width="160" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 8: Create moment -->
+        <mxCell id="step8" value="8. Create Moment&#xa;Check if user exists&#xa;Prepare moment data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="640" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 9: API call -->
+        <mxCell id="step9" value="9. API Request&#xa;POST /users/name/MuthuA&#xa;POST /moments/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="730" y="640" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 10: Database operations -->
+        <mxCell id="step10" value="10. Database Operations&#xa;Find/Create User&#xa;Insert Moment Record" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#F44336;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="950" y="640" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 11: API response -->
+        <mxCell id="step11" value="11. API Response&#xa;Return moment data&#xa;Success confirmation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="730" y="760" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 12: Bot logs success -->
+        <mxCell id="step12" value="12. Log Success&#xa;✅ Moment created:&#xa;MuthuA - birthday - Nov 6" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="760" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 13: Dashboard update -->
+        <mxCell id="step13" value="13. Dashboard Update&#xa;New moment appears&#xa;Available for team greetings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="760" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Step 14: Store conversation -->
+        <mxCell id="step14" value="14. Store Conversation&#xa;Save chat history&#xa;for context" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="290" y="880" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrows -->
+        <mxCell id="arrow1" value="" style="endArrow=classic;html=1;strokeColor=#4CAF50;strokeWidth=2;" edge="1" parent="1" source="step1" target="step2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow2" value="" style="endArrow=classic;html=1;strokeColor=#2196F3;strokeWidth=2;" edge="1" parent="1" source="step2" target="step3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow3" value="" style="endArrow=classic;html=1;strokeColor=#9C27B0;strokeWidth=2;" edge="1" parent="1" source="step3" target="step4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow4" value="" style="endArrow=classic;html=1;strokeColor=#9C27B0;strokeWidth=2;" edge="1" parent="1" source="step4" target="step5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow5" value="" style="endArrow=classic;html=1;strokeColor=#2196F3;strokeWidth=2;" edge="1" parent="1" source="step5" target="step6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow6" value="" style="endArrow=classic;html=1;strokeColor=#4CAF50;strokeWidth=2;" edge="1" parent="1" source="step6" target="step7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow7" value="" style="endArrow=classic;html=1;strokeColor=#2196F3;strokeWidth=2;" edge="1" parent="1" source="step6" target="step8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow8" value="" style="endArrow=classic;html=1;strokeColor=#FF9800;strokeWidth=2;" edge="1" parent="1" source="step8" target="step9">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow9" value="" style="endArrow=classic;html=1;strokeColor=#F44336;strokeWidth=2;" edge="1" parent="1" source="step9" target="step10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow10" value="" style="endArrow=classic;html=1;strokeColor=#F44336;strokeWidth=2;" edge="1" parent="1" source="step10" target="step11">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow11" value="" style="endArrow=classic;html=1;strokeColor=#FF9800;strokeWidth=2;" edge="1" parent="1" source="step11" target="step12">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow12" value="" style="endArrow=classic;html=1;strokeColor=#4CAF50;strokeWidth=2;" edge="1" parent="1" source="step11" target="step13">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow13" value="" style="endArrow=classic;html=1;strokeColor=#2196F3;strokeWidth=2;" edge="1" parent="1" source="step12" target="step14">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="400" as="sourcePoint" />
+            <mxPoint x="450" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Success indicator -->
+        <mxCell id="success" value="✅ SUCCESS: Moment Created &amp; Ready for Team Greetings!" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#388E3C;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1000" width="500" height="40" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

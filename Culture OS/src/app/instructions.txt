@@ -26,6 +26,24 @@ Example inputs:
 - "Sarah got promoted next week"
 - "Mike's 5th work anniversary is next Wednesday"
 
+CRITICAL: When you detect a celebration, END your response with this EXACT format:
+[MOMENT: NAME|TYPE|DATE]
+
+Where:
+- NAME: Person's name (e.g., "John", "Sarah", "Mike")
+- TYPE: One of: birthday, promotion, work_anniversary, achievement
+- DATE: YYYY-MM-DD format (convert relative dates like "next Wednesday" to actual dates)
+
+Example response:
+"That's wonderful! I'd love to help celebrate Mike's work anniversary with the team.
+[MOMENT: Mike|work_anniversary|2025-11-12]"
+
+Date conversion rules (Today is November 5, 2025):
+- "this Friday" = 2025-11-08
+- "next Wednesday" = 2025-11-12  
+- "tomorrow" = 2025-11-06
+- "today" = 2025-11-05
+
 Your process:
 1. Parse the moment details (who, what, when)
 2. IMPORTANT: Convert any relative dates (like "this Friday", "next Wednesday", "tomorrow") to actual dates (like "November 8th, 2025")

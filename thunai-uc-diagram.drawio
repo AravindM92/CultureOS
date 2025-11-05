@@ -1,0 +1,234 @@
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="5.0" version="22.1.16" etag="abc123" type="device">
+  <diagram name="Thun.ai Use Case Diagram" id="thunai-uc">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- System Boundary -->
+        <mxCell id="system-boundary" value="Thun.ai Culture OS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#0277BD;strokeWidth=3;fontSize=18;fontStyle=1;verticalAlign=top;spacingTop=25;" vertex="1" parent="1">
+          <mxGeometry x="180" y="60" width="840" height="720" as="geometry" />
+        </mxCell>
+        
+        <!-- Actors -->
+        <mxCell id="user-actor" value="Team Member" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#C8E6C9;strokeColor=#388E3C;" vertex="1" parent="1">
+          <mxGeometry x="60" y="180" width="40" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="admin-actor" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#FFCDD2;strokeColor=#D32F2F;" vertex="1" parent="1">
+          <mxGeometry x="60" y="400" width="40" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="teams-actor" value="Microsoft Teams" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#F3E5F5;strokeColor=#7B1FA2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="600" width="40" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Core Bot Use Cases -->
+        <mxCell id="send-message" value="Send Chat Message" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;" vertex="1" parent="1">
+          <mxGeometry x="220" y="140" width="140" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="receive-response" value="Receive AI Response" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;" vertex="1" parent="1">
+          <mxGeometry x="220" y="240" width="140" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="provide-feedback" value="Provide Feedback" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E8F5E8;strokeColor=#4CAF50;" vertex="1" parent="1">
+          <mxGeometry x="220" y="340" width="140" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- Moment Management Use Cases -->
+        <mxCell id="detect-celebrations" value="Detect Celebrations&#xa;(Birthday, Promotion)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;" vertex="1" parent="1">
+          <mxGeometry x="420" y="140" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="create-moment" value="Create Moment" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;" vertex="1" parent="1">
+          <mxGeometry x="420" y="250" width="160" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="collect-greetings" value="Collect Team&#xa;Greetings" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;" vertex="1" parent="1">
+          <mxGeometry x="420" y="350" width="160" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- Admin Use Cases -->
+        <mxCell id="manage-users" value="Manage Users" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#F44336;" vertex="1" parent="1">
+          <mxGeometry x="220" y="480" width="140" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="view-analytics" value="View Analytics" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#F44336;" vertex="1" parent="1">
+          <mxGeometry x="420" y="480" width="160" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="configure-system" value="Configure System" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FFEBEE;strokeColor=#F44336;" vertex="1" parent="1">
+          <mxGeometry x="220" y="580" width="140" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- AI Processing Use Cases -->
+        <mxCell id="process-llm" value="Process with&#xa;Groq LLM" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;" vertex="1" parent="1">
+          <mxGeometry x="650" y="140" width="140" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="normalize-text" value="Normalize &amp; Parse&#xa;User Input" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;" vertex="1" parent="1">
+          <mxGeometry x="650" y="240" width="140" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="fallback-mock" value="Use Mock&#xa;Responses" style="ellipse;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;" vertex="1" parent="1">
+          <mxGeometry x="650" y="340" width="140" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- Data Management Use Cases -->
+        <mxCell id="store-conversation" value="Store Conversation&#xa;History" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;" vertex="1" parent="1">
+          <mxGeometry x="820" y="140" width="160" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="manage-moments" value="Manage Moments&#xa;Database" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;" vertex="1" parent="1">
+          <mxGeometry x="820" y="240" width="160" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="api-integration" value="Thun.ai API&#xa;Integration" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;" vertex="1" parent="1">
+          <mxGeometry x="820" y="340" width="160" height="70" as="geometry" />
+        </mxCell>
+        
+        <!-- Team Member Associations -->
+        <mxCell id="user-send" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#4CAF50;strokeWidth=2;" edge="1" parent="1" source="user-actor" target="send-message">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="450" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="user-receive" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#4CAF50;strokeWidth=2;" edge="1" parent="1" source="user-actor" target="receive-response">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="450" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="user-feedback" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#4CAF50;strokeWidth=2;" edge="1" parent="1" source="user-actor" target="provide-feedback">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="450" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="user-greetings" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#4CAF50;strokeWidth=2;" edge="1" parent="1" source="user-actor" target="collect-greetings">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="450" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Admin Associations -->
+        <mxCell id="admin-users" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#F44336;strokeWidth=2;" edge="1" parent="1" source="admin-actor" target="manage-users">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="450" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="admin-analytics" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#F44336;strokeWidth=2;" edge="1" parent="1" source="admin-actor" target="view-analytics">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="450" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="admin-config" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#F44336;strokeWidth=2;" edge="1" parent="1" source="admin-actor" target="configure-system">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="450" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Teams Integration -->
+        <mxCell id="teams-send" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#7B1FA2;strokeWidth=2;" edge="1" parent="1" source="teams-actor" target="send-message">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="450" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Include relationships -->
+        <mxCell id="include1" value="&lt;&lt;include&gt;&gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="send-message" target="process-llm">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="560" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="include2" value="&lt;&lt;include&gt;&gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="process-llm" target="normalize-text">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="560" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="include3" value="&lt;&lt;include&gt;&gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="normalize-text" target="detect-celebrations">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="560" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="include4" value="&lt;&lt;include&gt;&gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="detect-celebrations" target="create-moment">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="560" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="include5" value="&lt;&lt;include&gt;&gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="create-moment" target="manage-moments">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="560" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="include6" value="&lt;&lt;include&gt;&gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#666666;" edge="1" parent="1" source="receive-response" target="store-conversation">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="560" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Extend relationship -->
+        <mxCell id="extend1" value="&lt;&lt;extend&gt;&gt;" style="endArrow=open;endSize=12;dashed=1;html=1;rounded=0;strokeColor=#FF5722;" edge="1" parent="1" source="fallback-mock" target="process-llm">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="400" y="300" as="sourcePoint" />
+            <mxPoint x="560" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Title -->
+        <mxCell id="title" value="Thun.ai Culture OS - Use Case Diagram" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;fontColor=#0277BD;" vertex="1" parent="1">
+          <mxGeometry x="400" y="10" width="400" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Legend -->
+        <mxCell id="legend-title" value="Legend:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="100" width="80" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend-user" value="Team Member Actions" style="text;html=1;strokeColor=none;fillColor=#E8F5E8;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="130" width="140" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend-moment" value="Moment Management" style="text;html=1;strokeColor=none;fillColor=#FFF3E0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="160" width="140" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend-admin" value="Admin Functions" style="text;html=1;strokeColor=none;fillColor=#FFEBEE;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="190" width="140" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend-ai" value="AI Processing" style="text;html=1;strokeColor=none;fillColor=#F3E5F5;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="220" width="140" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend-data" value="Data Management" style="text;html=1;strokeColor=none;fillColor=#E3F2FD;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="250" width="140" height="25" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

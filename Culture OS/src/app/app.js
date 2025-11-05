@@ -155,168 +155,57 @@ app.on('message.submit.feedback', async ({ activity }) => {
 
 async function handleMomentDetection(activity, botResponse) {
   try {
-    console.log('[DEBUG] handleMomentDetection called');
-    console.log('[DEBUG] User message:', activity.text);
-    console.log('[DEBUG] Bot response:', botResponse);
+    console.log('handleMomentDetection called for:', activity.text);
     
-    // CRITICAL: Use LLM-first architecture - extract ALL info from bot response, not user input
-    // The LLM has already understood and normalized the user's unclear/misspelled input
+    // LLM-FIRST ARCHITECTURE: Parse structured output from LLM
+    // LLM instructions format moments as: [MOMENT: NAME|TYPE|DATE]
     
-    // Only process if bot response contains specific celebration indicators
-    // Be more specific to avoid false positives from generic "create" mentions
-    const celebrationIndicators = [
-      'birthday', 'bday', 'born',
-      'promotion', 'promoted', 'new role',
-      'anniversary', 'years with', 'years at',
-      'achievement', 'accomplished', 'completed project',
-      'Happy birthday', 'Congratulations on',
-      'create moment', 'create a moment', 'moment for'
-    ];
+    // Look for structured moment format in LLM response
+    const momentMatch = botResponse.match(/\[MOMENT:\s*([^|]+)\|([^|]+)\|([^\]]+)\]/i);
     
-    const hasCelebrationIndicator = celebrationIndicators.some(indicator => 
-      botResponse.toLowerCase().includes(indicator.toLowerCase())
-    );
-    
-    if (!hasCelebrationIndicator) {
-      console.log('[DEBUG] Bot response does not contain specific celebration indicators');
-      return;
+    if (!momentMatch) {
+      return; // No moment detected
     }
     
-    console.log('[DEBUG] Bot detected celebration - extracting from LLM response');
+    // Extract from structured format
+    const celebrantName = momentMatch[1].trim();
+    const celebrationType = momentMatch[2].trim().toLowerCase();
+    const dateString = momentMatch[3].trim();
     
-    // Extract celebration type from LLM response (not user input!)
-    const botResponseLower = botResponse.toLowerCase();
-    let celebrationType = 'celebration';
+    console.log(`Detected moment: ${celebrantName} - ${celebrationType} on ${dateString}`);
     
-    if (botResponseLower.includes('birthday') || botResponseLower.includes('bday')) {
-      celebrationType = 'birthday';
-    } else if (botResponseLower.includes('promotion') || botResponseLower.includes('promoted')) {
-      celebrationType = 'promotion';
-    } else if (botResponseLower.includes('anniversary')) {
-      celebrationType = 'work_anniversary';
-    } else if (botResponseLower.includes('completed') || botResponseLower.includes('finished')) {
-      celebrationType = 'achievement';
-    }
-    
-    console.log('[DEBUG] Detected celebration type:', celebrationType);
-    
-    // CRITICAL FIX: Extract celebrant name from LLM response (not user input!)
-    // The LLM has cleaned and normalized the name properly
-    let celebrantName = null;
-    
-    // Parse names from LLM response - look for patterns like "Happy birthday to John" or "John's birthday"
-    const botWords = botResponse.split(' ');
-    for (let i = 0; i < botWords.length; i++) {
-      const word = botWords[i].replace(/[^\w]/g, ''); // Remove punctuation
-      
-      // Look for capitalized words that might be names in bot response
-      if (word.length > 2 && word[0].toUpperCase() === word[0] && 
-          !['The', 'This', 'That', 'When', 'Where', 'What', 'Who', 'Happy', 'Birthday', 'Is', 'His', 'Her', 'Their', 'Thunai', 'Im', 'And', 'But', 'For', 'With', 'Let', 'Me', 'Create', 'Before', 'Should', 'Can', 'You', 'Please', 'Yes', 'No'].includes(word)) {
-        
-        // First priority: check if this name appears in user input (cross-reference)
-        const userInputLower = activity.text.toLowerCase();
-        const wordLower = word.toLowerCase();
-        if (userInputLower.includes(wordLower)) {
-          celebrantName = word;
-          console.log(`[DEBUG] Found celebrant name in bot response: ${word} (cross-referenced with user input)`);
-          break;
-        }
-        
-        // Second priority: if LLM mentions a proper name in celebration context, trust it
-        // This handles conversation continuity where user says "no, next wednesday" 
-        // but LLM remembers "Mukund" from previous context
-        if (!celebrantName) {
-          console.log(`[DEBUG] Potential celebrant name from LLM context: ${word}`);
-          celebrantName = word; // Tentatively accept, but continue looking for cross-referenced names
-        }
-      }
-    }
-    
-    // Fallback: if no name found in bot response, try user input as last resort
-    if (!celebrantName) {
-      console.log('[DEBUG] No name found in bot response, trying user input as fallback');
-      const userWords = activity.text.split(' ');
-      for (let i = 0; i < userWords.length; i++) {
-        const word = userWords[i].replace(/[^\w]/g, '');
-        if (word.length > 2 && word[0].toUpperCase() === word[0] && 
-            !['The', 'This', 'That', 'When', 'Where', 'What', 'Who', 'Happy', 'Birthday', 'Is', 'His', 'Her', 'Their'].includes(word)) {
-          celebrantName = word;
-          console.log(`[DEBUG] Fallback: found celebrant name in user input: ${word}`);
-          break;
-        }
-      }
-    }
-    
-    console.log('[DEBUG] Final extracted celebrant name:', celebrantName);
-    
-    if (!celebrantName) {
-      console.log('[DEBUG] No celebrant name detected in either bot response or user input');
-      return;
-    }
-    
-    // Simple date extraction - let LLM do the parsing
+    // Convert date string to YYYY-MM-DD format
     let momentDate = new Date().toISOString().split('T')[0]; // Default to today
     
-    // Look for actual dates that LLM should provide (November 8th, 2025, etc.)
-    const datePatterns = [
-      /(\w+)\s+(\d{1,2})(st|nd|rd|th)?,?\s*(\d{4})/i, // "November 8th, 2025"
-      /(\d{1,2})(st|nd|rd|th)?\s+(\w+),?\s*(\d{4})/i, // "8th November, 2025"
-      /(\d{1,2})\/(\d{1,2})\/(\d{4})/,               // "11/8/2025"
-      /(\d{4})-(\d{1,2})-(\d{1,2})/                  // "2025-11-08"
-    ];
-    
-    for (const pattern of datePatterns) {
-      const match = botResponse.match(pattern);
-      if (match) {
-        console.log(`[DEBUG] LLM provided actual date: ${match[0]}`);
-        // For now, let's try to parse common formats
-        try {
-          const parsedDate = new Date(match[0]);
-          if (!isNaN(parsedDate)) {
-            momentDate = parsedDate.toISOString().split('T')[0];
-            console.log(`[DEBUG] Parsed date to: ${momentDate}`);
-          }
-        } catch (error) {
-          console.log(`[DEBUG] Could not parse date: ${match[0]}`);
-        }
-        break;
+    try {
+      const parsedDate = new Date(dateString);
+      if (!isNaN(parsedDate)) {
+        momentDate = parsedDate.toISOString().split('T')[0];
       }
+    } catch (error) {
+      console.log(`Could not parse date "${dateString}", using today`);
     }
-    
-    console.log(`[DEBUG] Using moment date: ${momentDate}`);
-    console.log(`Detected celebration for: ${celebrantName} (${celebrationType})`);
     
     // Check if user exists in database
     let celebrant = await findUserByName(celebrantName);
     
     if (!celebrant) {
-      console.log(`[INFO] User "${celebrantName}" not found in database`);
-      
-      // Ask for confirmation before creating new user
-      const confirmationMessage = `🤔 I noticed you mentioned ${celebrantName}, but they're not in our team directory yet. Would you like me to:\n\n1️⃣ Add ${celebrantName} as a new team member\n2️⃣ Skip creating this moment\n\nPlease reply with "1" to add them or "2" to skip.`;
-      
-      // TODO: Implement proper confirmation flow
-      // For now, we'll create the user but with a note that confirmation is needed
-      console.log(`[CONFIRMATION NEEDED] ${confirmationMessage}`);
-      
-      // Create user with pending status until confirmed
-      console.log(`Creating new user: ${celebrantName} (pending confirmation)`);
+      console.log(`Creating new user: ${celebrantName}`);
       celebrant = await createUser(celebrantName, activity);
     }
     
     if (celebrant) {
       // Create the moment using correct API schema
       const momentData = {
-        person_name: celebrant.name,  // Use person_name, not celebrant_id
+        person_name: celebrant.name,
         moment_type: celebrationType,
-        moment_date: momentDate, // Use extracted or default date
-        description: activity.text, // Keep original user input as description
-        created_by: activity.from.id || 'admin_teams_id' // Use teams_user_id for foreign key
+        moment_date: momentDate,
+        description: activity.text,
+        created_by: activity.from.id || 'admin_teams_id'
       };
       
-      console.log('[DEBUG] Creating moment with data:', momentData);
       const moment = await createMoment(momentData);
-      console.log(`✅ Real moment created in database:`, moment);
+      console.log(`✅ Moment created: ${celebrant.name} - ${celebrationType} on ${momentDate}`);
     }
     
   } catch (error) {
@@ -371,6 +260,16 @@ function detectMomentType(message) {
   if (message.includes('anniversary')) return 'work_anniversary';
   if (message.includes('completed') || message.includes('finished')) return 'achievement';
   return 'celebration';
+}
+
+// Helper function to get groq model instance
+function getGroqModel() {
+  const config = require('../config');
+  const { GroqChatModel } = require('./groqChatModel');
+  return new GroqChatModel({
+    apiKey: config.groqApiKey,
+    model: config.groqModel || "llama-3.1-8b-instant"
+  });
 }
 
 module.exports = app;

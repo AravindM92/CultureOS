@@ -146,13 +146,10 @@ class ThunaiAPIClient {
     // ==========================================
 
     async analyzeMomentText(text) {
-        try {
-            const response = await this.client.post('/moment-analysis/parse', { text });
-            return response.data;
-        } catch (error) {
-            console.error('Error analyzing moment text:', error.message);
-            return null;
-        }
+        // DISABLED: This function was creating wrong moment entries
+        // The LLM-first approach in handleMomentDetection should handle moments instead
+        console.log('analyzeMomentText disabled - using LLM-first approach instead');
+        return null;
     }
 
     async createMoment(momentData) {

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture OS – Thunai: Your Team Companion</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            padding: 60px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide h1 {
+            font-size: 3.5em;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .slide h2 {
+            font-size: 2.5em;
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .slide h3 {
+            font-size: 1.8em;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+        .content {
+            background: rgba(255,255,255,0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 100%;
+        }
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .problem, .solution {
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .problem {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        .solution {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+        .bot-personality {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .personality-trait {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .privacy-highlight {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            border: 3px solid #ff6b6b;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .privacy-highlight h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+        }
+        .tech-stack {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+        }
+        .tech-item {
+            background: white;
+            padding: 20px;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-align: center;
+            min-width: 100px;
+        }
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        .nav-btn {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 15px 25px;
+            margin: 0 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .logo {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 30px;
+        }
+        .screenshot {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin: 20px 0;
+        }
+        .wfo-flow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .wfo-step {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+        }
+        .wfo-step::after {
+            content: '→';
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #667eea;
+        }
+        .wfo-step:last-child::after {
+            display: none;
+        }
+        ul {
+            font-size: 1.2em;
+            line-height: 1.8;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Title -->
+    <div class="slide active">
+        <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="logo">
+        <h1>Culture OS – Thunai</h1>
+        <h2 style="color: #FFD700;">Your Team Companion</h2>
+        <div class="highlight">
+            <p style="font-size: 1.3em; text-align: center; margin: 0;">
+                🤖 Enhancing Team Engagement & Work-from-Office Intelligence
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Problem & Solution -->
+    <div class="slide">
+        <h2>The Challenge & Our Solution</h2>
+        <div class="content">
+            <div class="problem-solution">
+                <div class="problem">
+                    <h3>🚨 Problem</h3>
+                    <ul>
+                        <li>Low team engagement</li>
+                        <li>Unpredictable WFO attendance</li>
+                        <li>Missed celebration moments</li>
+                        <li>Disconnected remote teams</li>
+                    </ul>
+                </div>
+                <div class="solution">
+                    <h3>✨ Solution</h3>
+                    <ul>
+                        <li>AI-powered team companion</li>
+                        <li>Direct WFO intent collection</li>
+                        <li>Automated moment detection</li>
+                        <li>Seamless Teams integration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Meet Thunai Bot -->
+    <div class="slide">
+        <h2>Meet Thunai Bot 🤖</h2>
+        <div class="content">
+            <div class="bot-personality">
+                <div class="personality-trait">
+                    <h3>😊 Friendly</h3>
+                    <p>Warm, approachable conversations that make everyone feel welcome</p>
+                </div>
+                <div class="personality-trait">
+                    <h3>🎉 Cheerful</h3>
+                    <p>Brings positive energy and celebrates every team moment</p>
+                </div>
+                <div class="personality-trait">
+                    <h3>😏 Slightly Sarcastic</h3>
+                    <p>That fun teammate everyone enjoys - keeps things interesting!</p>
+                </div>
+            </div>
+            <div class="privacy-highlight">
+                <h3>🔒 Privacy First Approach</h3>
+                <p><strong>Every interaction requires explicit user consent.</strong> Terms & Conditions are presented before any data collection, with consent flags stored securely in our database.</p>
+            </div>
+            <div class="highlight">
+                <p style="text-align: center; font-size: 1.2em; margin: 0;">
+                    <strong>🔗 Fully Integrated with Microsoft Teams</strong><br>
+                    Available in Teams playground for live demonstrations
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Architecture Overview -->
+    <div class="slide">
+        <h2>System Architecture</h2>
+        <div class="content">
+            <img src="PPT Items/thunai-flow-diagram.png" alt="System Flow Diagram" class="screenshot">
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <strong>LLM</strong><br>Groq AI
+                </div>
+                <div class="tech-item">
+                    <strong>Backend</strong><br>FastAPI
+                </div>
+                <div class="tech-item">
+                    <strong>Database</strong><br>SQLite
+                </div>
+                <div class="tech-item">
+                    <strong>Frontend</strong><br>MS Teams
+                </div>
+            </div>
+            <div class="privacy-highlight">
+                <h3>🛡️ Compliance & Privacy</h3>
+                <p>Guided by office decorum and privacy policies. All user data collection requires explicit consent with T&C acceptance.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Moments Module -->
+    <div class="slide">
+        <h2>Moments Module ✨</h2>
+        <div class="content">
+            <div class="two-column">
+                <div>
+                    <h3>Live Bot Conversations</h3>
+                    <img src="PPT Items/Moments Screenshot.jpg" alt="Bot Conversation" class="screenshot">
+                </div>
+                <div>
+                    <h3>Database Integration</h3>
+                    <img src="PPT Items/Moments table db SS.png" alt="Database Screenshot" class="screenshot">
+                </div>
+            </div>
+            <div class="highlight">
+                <h3>🎯 Key Features</h3>
+                <ul>
+                    <li><strong>Auto-Detection:</strong> AI identifies birthdays, promotions, achievements</li>
+                    <li><strong>Real-time Storage:</strong> Moments captured and stored instantly</li>
+                    <li><strong>Team Celebrations:</strong> Automated notifications and greetings</li>
+                    <li><strong>Privacy Compliant:</strong> User consent required for all personal data</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Database & API -->
+    <div class="slide">
+        <h2>Data Management & API</h2>
+        <div class="content">
+            <div class="two-column">
+                <div>
+                    <h3>User Database</h3>
+                    <img src="PPT Items/User table DB SS.jpg" alt="User Database" class="screenshot">
+                    <div class="privacy-highlight">
+                        <p><strong>🔐 Consent Tracking:</strong> Every user record includes T&C acceptance flags and privacy preferences</p>
+                    </div>
+                </div>
+                <div>
+                    <h3>RESTful API Features</h3>
+                    <ul>
+                        <li>User management with consent tracking</li>
+                        <li>Moment creation and retrieval</li>
+                        <li>WFO prediction data collection</li>
+                        <li>Privacy-compliant data handling</li>
+                        <li>Swagger documentation</li>
+                        <li>Real-time dashboard integration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: WFO Prediction Module -->
+    <div class="slide">
+        <h2>WFO Prediction Intelligence 🏢</h2>
+        <div class="content">
+            <div class="wfo-flow">
+                <div class="wfo-step">
+                    <h4>8 PM Check-in</h4>
+                    <p>Bot asks about tomorrow's office plans</p>
+                </div>
+                <div class="wfo-step">
+                    <h4>Consent Collection</h4>
+                    <p>T&C acceptance for data usage</p>
+                </div>
+                <div class="wfo-step">
+                    <h4>Intent Capture</h4>
+                    <p>Direct user responses stored securely</p>
+                </div>
+                <div class="wfo-step">
+                    <h4>Smart Analytics</h4>
+                    <p>Real attendance patterns vs predictions</p>
+                </div>
+            </div>
+            <div class="highlight">
+                <h3>🎯 Why This Approach Works</h3>
+                <ul>
+                    <li><strong>Direct Intent:</strong> No guesswork - we ask users directly</li>
+                    <li><strong>Friendly Interaction:</strong> Natural conversation, not surveys</li>
+                    <li><strong>Real Data:</strong> Actual user intentions vs algorithmic predictions</li>
+                    <li><strong>Privacy First:</strong> Explicit consent for every data point collected</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Additional Features -->
+    <div class="slide">
+        <h2>Extended Capabilities 🚀</h2>
+        <div class="content">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔥 Stories [Hot Now]</h3>
+                    <ul>
+                        <li>OTT discussions</li>
+                        <li>IPL polling</li>
+                        <li>Chennai travel & food tips</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>📅 Daily Quests</h3>
+                    <ul>
+                        <li>Grab a coffee reminder</li>
+                        <li>Stretch break alerts</li>
+                        <li>Talk to a teammate</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🎊 Seasonal Quests</h3>
+                    <ul>
+                        <li>Plan team lunches</li>
+                        <li>Fun awards ceremonies</li>
+                        <li>Account-level DC activities</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔮 Future Scope</h3>
+                    <ul>
+                        <li>Sentiment analysis</li>
+                        <li>Emotional intelligence</li>
+                        <li>Project vibe monitoring</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="privacy-highlight">
+                <h3>🛡️ Admin Control & Privacy</h3>
+                <p>All features managed by account-specific Thunai coordinator with granular privacy controls and user consent management.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Why A2M TechForce -->
+    <div class="slide">
+        <h2>Why A2M TechForce? 🏆</h2>
+        <div class="content">
+            <div class="highlight">
+                <h3>🎯 Use Case Coverage Leadership</h3>
+                <p style="font-size: 1.3em; text-align: center;">We lead in comprehensive use case coverage across the organization</p>
+            </div>
+            <div class="two-column">
+                <div>
+                    <h3>🔗 Integration Ecosystem</h3>
+                    <ul>
+                        <li><strong>Agent Architecture:</strong> Any team's application can integrate as a Thunai agent</li>
+                        <li><strong>Unified Platform:</strong> Single bot, multiple capabilities</li>
+                        <li><strong>Scalable Design:</strong> Easy to add new modules</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>🚀 Real-World Applications</h3>
+                    <ul>
+                        <li><strong>Food Ordering:</strong> Vendor/menu lookup integration</li>
+                        <li><strong>Carpooling:</strong> Location-based teammate matching</li>
+                        <li><strong>Parking:</strong> Smart suggestions based on availability</li>
+                        <li><strong>Privacy Compliant:</strong> All integrations follow T&C protocols</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">9</span>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        // Auto-advance (optional)
+        // setInterval(nextSlide, 10000); // Uncomment for auto-advance every 10 seconds
+    </script>
+</body>
+</html>
