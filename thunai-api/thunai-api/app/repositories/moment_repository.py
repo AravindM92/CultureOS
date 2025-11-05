@@ -31,7 +31,7 @@ class MomentRepository(BaseRepository):
             )
             await conn.commit()
             moment_id = cursor.lastrowid
-            print(f"✅ Moment created in database with ID: {moment_id}")
+            print(f"Moment created in database with ID: {moment_id}")
             return await self.find_by_id(moment_id)
     
     async def update(self, moment_id: int, update_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:

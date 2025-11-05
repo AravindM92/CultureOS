@@ -76,7 +76,7 @@ class ThunaiAPIClient {
 
     async getAllUsers() {
         try {
-            const response = await this.client.get('/users');
+            const response = await this.client.get('/users/');
             return response.data;
         } catch (error) {
             console.error('Error getting all users:', error.message);

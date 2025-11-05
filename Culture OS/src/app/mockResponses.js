@@ -16,6 +16,16 @@ class MockThunaiResponses {
         "🎉 WOW! This calls for a proper celebration! I'm genuinely thrilled for you. Moments like these are what make work truly meaningful. You've made my day brighter! ✨",
         "💫 This is FANTASTIC news! I'm practically bouncing with excitement for you! Your achievement deserves all the recognition. Let's make sure everyone knows how awesome you are!"
       ],
+      birthday: [
+        "🎂 Happy birthday! What a wonderful celebration! Birthdays are such special moments to appreciate another year of life and achievements. I hope it's filled with joy and happiness! 🎉",
+        "🎈 Wishing a very happy birthday! Birthday celebrations are the best - another year of growth, success, and memories. Hope this birthday is absolutely fantastic! 🎊", 
+        "🎁 Happy birthday celebration! Birthdays mark such important milestones. Here's to celebrating another amazing year and all the incredible moments ahead! ✨"
+      ],
+      promotion: [
+        "🎉 Congratulations on the promotion! This is such an incredible achievement and well-deserved recognition. Your promotion shows your dedication and talent! 🌟",
+        "🚀 What fantastic news about the promotion! Getting promoted is a huge accomplishment that reflects your hard work. This promotion is truly something to celebrate! 🎊",
+        "⭐ Amazing promotion news! This promotion is proof of your exceptional contributions. Promotions like this inspire everyone around you! 💫"
+      ],
       encouragement: [
         "🌟 I believe in you completely! Every challenge is just another opportunity for you to shine. You've got this, and I'm here cheering you on every step of the way! 💪",
         "✨ Remember, you're capable of incredible things! Even on tough days, you're making a difference. I'm here to remind you how valued and appreciated you are! 🎯",
@@ -52,8 +62,17 @@ class MockThunaiResponses {
       return this.getRandomResponse('greetings');
     }
     
-    // Check for celebration keywords
-    if (this.containsAny(message, ['won', 'achieved', 'completed', 'finished', 'success', 'celebrate', 'victory', 'accomplishment', 'milestone'])) {
+    // Check for specific celebration types (more specific matching)
+    if (this.containsAny(message, ['birthday', 'bday'])) {
+      return this.getRandomResponse('birthday');
+    }
+    
+    if (this.containsAny(message, ['promotion', 'promoted'])) {
+      return this.getRandomResponse('promotion');
+    }
+    
+    // Check for general celebration keywords (including birthdays, promotions, anniversaries)
+    if (this.containsAny(message, ['won', 'achieved', 'completed', 'finished', 'success', 'celebrate', 'victory', 'accomplishment', 'milestone', 'anniversary', 'congratulations'])) {
       return this.getRandomResponse('celebration');
     }
     
@@ -82,7 +101,11 @@ class MockThunaiResponses {
   }
   
   containsAny(text, keywords) {
-    return keywords.some(keyword => text.includes(keyword));
+    // Use word boundary matching to avoid partial matches like "hi" in "his"
+    return keywords.some(keyword => {
+      const regex = new RegExp('\\b' + keyword + '\\b', 'i');
+      return regex.test(text);
+    });
   }
   
   getRandomResponse(category) {
