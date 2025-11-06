@@ -63,6 +63,62 @@ app.on('message', async ({ send, stream, activity }) => {
       content: activity.text
     });
 
+    // Check if this is a response to user confirmation request
+    const userInput = activity.text.trim();
+    if (userInput === "1" || userInput === "2") {
+      if (userInput === "1") {
+        await send("✅ Great! I'll add them as a new team member and create the moment.");
+        
+        // Get the last pending moment from storage (simple approach for now)
+        const storageKey = `team_conversation:${activity.conversation.id}`;
+        const messages = storage.get(storageKey) || [];
+        
+        // Look for pending moment in recent messages (last 5 messages)
+        let pendingMomentData = null;
+        for (let i = messages.length - 1; i >= Math.max(0, messages.length - 5); i--) {
+          if (messages[i].pendingMoment) {
+            pendingMomentData = messages[i].pendingMoment;
+            break;
+          }
+        }
+        
+        if (pendingMomentData) {
+          console.log('Creating user and moment from confirmation:', pendingMomentData);
+          
+          // Create the user
+          const celebrant = await createUser(pendingMomentData.celebrantName, {
+            from: { id: pendingMomentData.fromId },
+            text: pendingMomentData.originalText
+          });
+          
+          if (celebrant) {
+            // Create the moment
+            const momentData = {
+              person_name: celebrant.name,
+              moment_type: pendingMomentData.celebrationType,
+              moment_date: pendingMomentData.momentDate,
+              description: pendingMomentData.originalText,
+              created_by: pendingMomentData.fromId || 'admin_teams_id'
+            };
+            
+            const moment = await createMoment(momentData);
+            if (moment) {
+              await send(`🎉 Perfect! I've added **${celebrant.name}** to the team and created their **${pendingMomentData.celebrationType}** moment for **${pendingMomentData.momentDate}**!`);
+            } else {
+              await send(`✅ Added **${celebrant.name}** to the team, but there was an issue creating the moment. Please try again.`);
+            }
+          } else {
+            await send(`❌ Sorry, there was an issue adding the user. Please try again.`);
+          }
+        } else {
+          await send(`❌ I couldn't find the pending moment data. Please try creating the moment again.`);
+        }
+      } else {
+        await send("👍 No problem! I'll skip creating this moment.");
+      }
+      return; // Don't process further
+    }
+
     // Try to use Groq AI (will fall back to mock if blocked by firewall)
     try {
       // NOTE: Corporate firewall may block external AI services
@@ -87,7 +143,24 @@ app.on('message', async ({ send, stream, activity }) => {
         });
         
         // Check for moment creation opportunities
-        await handleMomentDetection(activity, response.content);
+        const momentResult = await handleMomentDetection(activity, response.content);
+        
+        // If moment detection needs confirmation, send that message instead
+        if (momentResult && momentResult.needsConfirmation) {
+          // Store pending moment data in conversation history for later retrieval
+          messages.push({
+            role: 'system',
+            content: 'Pending moment confirmation',
+            pendingMoment: momentResult.pendingMoment
+          });
+          
+          const confirmationActivity = new MessageActivity(momentResult.message);
+          await send(confirmationActivity);
+          
+          // Store updated conversation history with pending moment
+          storage.set(storageKey, messages);
+          return; // Don't send the original AI response, just the confirmation
+        }
         
         const responseActivity = new MessageActivity(response.content).addAiGenerated().addFeedback();
         await send(responseActivity);
@@ -108,7 +181,23 @@ app.on('message', async ({ send, stream, activity }) => {
         });
         
         // Check for moment creation opportunities
-        await handleMomentDetection(activity, fullResponse);
+        const momentResult = await handleMomentDetection(activity, fullResponse);
+        
+        // If moment detection needs confirmation, send that message
+        if (momentResult && momentResult.needsConfirmation) {
+          // Store pending moment data in conversation history for later retrieval
+          messages.push({
+            role: 'system',
+            content: 'Pending moment confirmation',
+            pendingMoment: momentResult.pendingMoment
+          });
+          
+          const confirmationActivity = new MessageActivity(momentResult.message);
+          await send(confirmationActivity);
+          
+          // Store updated conversation history with pending moment
+          storage.set(storageKey, messages);
+        }
         
         // Wrap final response with AI Generated indicator
         stream.emit(new MessageActivity().addAiGenerated().addFeedback());
@@ -127,7 +216,13 @@ app.on('message', async ({ send, stream, activity }) => {
         await send(`🤖 ${fallbackResponse}`);
         
         // CRITICAL FIX: Also check for moment detection in fallback responses
-        await handleMomentDetection(activity, fallbackResponse);
+        const momentResult = await handleMomentDetection(activity, fallbackResponse);
+        
+        // If moment detection needs confirmation, send that message
+        if (momentResult && momentResult.needsConfirmation) {
+          const confirmationActivity = new MessageActivity(momentResult.message);
+          await send(confirmationActivity);
+        }
         
       } catch (fallbackError) {
         console.error('[ERROR] Fallback also failed:', fallbackError);
@@ -135,7 +230,13 @@ app.on('message', async ({ send, stream, activity }) => {
         await send(defaultResponse);
         
         // Even check default response for moment detection
-        await handleMomentDetection(activity, defaultResponse);
+        const momentResult = await handleMomentDetection(activity, defaultResponse);
+        
+        // If moment detection needs confirmation, send that message
+        if (momentResult && momentResult.needsConfirmation) {
+          const confirmationActivity = new MessageActivity(momentResult.message);
+          await send(confirmationActivity);
+        }
       }
     }
     
@@ -190,8 +291,27 @@ async function handleMomentDetection(activity, botResponse) {
     let celebrant = await findUserByName(celebrantName);
     
     if (!celebrant) {
-      console.log(`Creating new user: ${celebrantName}`);
-      celebrant = await createUser(celebrantName, activity);
+      console.log(`User "${celebrantName}" not found in database`);
+      
+      // Ask for confirmation before creating new user
+      const confirmationMessage = `🤔 I noticed you mentioned **${celebrantName}**, but they're not in our team directory yet.\n\nWould you like me to:\n\n1️⃣ Add ${celebrantName} as a new team member\n2️⃣ Skip creating this moment\n\nPlease reply with **"1"** to add them or **"2"** to skip.`;
+      
+      // Store the pending moment data for when user confirms
+      // TODO: Implement proper confirmation flow with conversation state
+      console.log(`[CONFIRMATION NEEDED] ${confirmationMessage}`);
+      
+      // For now, return without creating anything - wait for user confirmation
+      return {
+        needsConfirmation: true,
+        message: confirmationMessage,
+        pendingMoment: {
+          celebrantName,
+          celebrationType,
+          momentDate,
+          originalText: activity.text,
+          fromId: activity.from.id
+        }
+      };
     }
     
     if (celebrant) {

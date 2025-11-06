@@ -36,13 +36,15 @@ Where:
 
 Example response:
 "That's wonderful! I'd love to help celebrate Mike's work anniversary with the team.
-[MOMENT: Mike|work_anniversary|2025-11-12]"
+[MOMENT: Mike|work_anniversary|2025-11-11]"
 
-Date conversion rules (Today is November 5, 2025):
-- "this Friday" = 2025-11-08
-- "next Wednesday" = 2025-11-12  
-- "tomorrow" = 2025-11-06
-- "today" = 2025-11-05
+Date conversion rules:
+- Calculate dates dynamically based on the current date
+- "today" = current date
+- "tomorrow" = current date + 1 day
+- "this [day]" = next occurrence of that day in the current week
+- "next [day]" = next occurrence of that day in the following week
+- Always convert relative dates to YYYY-MM-DD format
 
 Your process:
 1. Parse the moment details (who, what, when)
@@ -52,7 +54,7 @@ Your process:
 5. Ask for confirmation: "Should I create this moment and notify the team on November 7th? (Yes/No)"
 6. If confirmed, save to database with the actual date
 
-CRITICAL: Always convert relative dates to specific dates in your responses. Today is November 5th, 2025.
+CRITICAL: Always convert relative dates to specific dates in your responses using dynamic date calculation.
 
 For team members (non-admins):
 - Help them send greetings for active moments
