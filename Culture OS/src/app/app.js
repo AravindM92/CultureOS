@@ -4,6 +4,7 @@ const { MessageActivity } = require('@microsoft/teams.api');
 const config = require("../config");
 const { GroqChatModel } = require('./groqChatModel');
 const { MockThunaiResponses } = require('./mockResponses');
+const { DateUtils } = require('./dateUtils');
 const ThunaiAPIClient = require('./apiClient');
 
 // Create instances
@@ -63,68 +64,12 @@ app.on('message', async ({ send, stream, activity }) => {
       content: activity.text
     });
 
-    // Check if this is a response to user confirmation request
-    const userInput = activity.text.trim();
-    if (userInput === "1" || userInput === "2") {
-      if (userInput === "1") {
-        await send("✅ Great! I'll add them as a new team member and create the moment.");
-        
-        // Get the last pending moment from storage (simple approach for now)
-        const storageKey = `team_conversation:${activity.conversation.id}`;
-        const messages = storage.get(storageKey) || [];
-        
-        // Look for pending moment in recent messages (last 5 messages)
-        let pendingMomentData = null;
-        for (let i = messages.length - 1; i >= Math.max(0, messages.length - 5); i--) {
-          if (messages[i].pendingMoment) {
-            pendingMomentData = messages[i].pendingMoment;
-            break;
-          }
-        }
-        
-        if (pendingMomentData) {
-          console.log('Creating user and moment from confirmation:', pendingMomentData);
-          
-          // Create the user
-          const celebrant = await createUser(pendingMomentData.celebrantName, {
-            from: { id: pendingMomentData.fromId },
-            text: pendingMomentData.originalText
-          });
-          
-          if (celebrant) {
-            // Create the moment
-            const momentData = {
-              person_name: celebrant.name,
-              moment_type: pendingMomentData.celebrationType,
-              moment_date: pendingMomentData.momentDate,
-              description: pendingMomentData.originalText,
-              created_by: pendingMomentData.fromId || 'admin_teams_id'
-            };
-            
-            const moment = await createMoment(momentData);
-            if (moment) {
-              await send(`🎉 Perfect! I've added **${celebrant.name}** to the team and created their **${pendingMomentData.celebrationType}** moment for **${pendingMomentData.momentDate}**!`);
-            } else {
-              await send(`✅ Added **${celebrant.name}** to the team, but there was an issue creating the moment. Please try again.`);
-            }
-          } else {
-            await send(`❌ Sorry, there was an issue adding the user. Please try again.`);
-          }
-        } else {
-          await send(`❌ I couldn't find the pending moment data. Please try creating the moment again.`);
-        }
-      } else {
-        await send("👍 No problem! I'll skip creating this moment.");
-      }
-      return; // Don't process further
-    }
-
-    // Try to use Groq AI (will fall back to mock if blocked by firewall)
+    // No more confirmation handling needed - we create directly    // Try to use Groq AI (will fall back to mock if blocked by firewall)
     try {
       // NOTE: Corporate firewall may block external AI services
       // Mock responses will be used as primary feature in that case
       
-      console.log('[DEBUG] Attempting to use Groq AI...');
+      if (config.enableDebug) console.log('[DEBUG] Attempting to use Groq AI...');
       
       // Initialize Groq model with configuration
       const groqModel = new GroqChatModel({
@@ -147,17 +92,22 @@ app.on('message', async ({ send, stream, activity }) => {
         
         // If moment detection needs confirmation, send that message instead
         if (momentResult && momentResult.needsConfirmation) {
-          // Store pending moment data in conversation history for later retrieval
+          // Store pending moment data separately (not in messages for Groq)
+          const pendingMomentKey = `${storageKey}_pending`;
+          console.log(`🔧 GROUP: STORING pending moment with key: ${pendingMomentKey}`);
+          console.log(`🔧 GROUP: STORING pending moment data:`, momentResult.pendingMoment);
+          storage.set(pendingMomentKey, momentResult.pendingMoment);
+          
+          // Add system message without custom properties
           messages.push({
             role: 'system',
-            content: 'Pending moment confirmation',
-            pendingMoment: momentResult.pendingMoment
+            content: 'Pending moment confirmation - user needs to confirm moment creation'
           });
           
           const confirmationActivity = new MessageActivity(momentResult.message);
           await send(confirmationActivity);
           
-          // Store updated conversation history with pending moment
+          // Store updated conversation history
           storage.set(storageKey, messages);
           return; // Don't send the original AI response, just the confirmation
         }
@@ -185,17 +135,22 @@ app.on('message', async ({ send, stream, activity }) => {
         
         // If moment detection needs confirmation, send that message
         if (momentResult && momentResult.needsConfirmation) {
-          // Store pending moment data in conversation history for later retrieval
+          // Store pending moment data separately (not in messages for Groq)
+          const pendingMomentKey = `${storageKey}_pending`;
+          console.log(`🔧 1:1: STORING pending moment with key: ${pendingMomentKey}`);
+          console.log(`🔧 1:1: STORING pending moment data:`, momentResult.pendingMoment);
+          storage.set(pendingMomentKey, momentResult.pendingMoment);
+          
+          // Add system message without custom properties
           messages.push({
             role: 'system',
-            content: 'Pending moment confirmation',
-            pendingMoment: momentResult.pendingMoment
+            content: 'Pending moment confirmation - user needs to confirm moment creation'
           });
           
           const confirmationActivity = new MessageActivity(momentResult.message);
           await send(confirmationActivity);
           
-          // Store updated conversation history with pending moment
+          // Store updated conversation history
           storage.set(storageKey, messages);
         }
         
@@ -208,7 +163,7 @@ app.on('message', async ({ send, stream, activity }) => {
       
     } catch (groqError) {
       console.error('[ERROR] Groq AI failed:', groqError);
-      console.log('[DEBUG] Falling back to mock responses...');
+      if (config.enableDebug) console.log('[DEBUG] Falling back to mock responses...');
       
       // Use intelligent mock responses as backup
       try {
@@ -220,6 +175,11 @@ app.on('message', async ({ send, stream, activity }) => {
         
         // If moment detection needs confirmation, send that message
         if (momentResult && momentResult.needsConfirmation) {
+          // Store pending moment data separately
+          const storageKey = `team_conversation:${activity.conversation.id}`;
+          const pendingMomentKey = `${storageKey}_pending`;
+          storage.set(pendingMomentKey, momentResult.pendingMoment);
+          
           const confirmationActivity = new MessageActivity(momentResult.message);
           await send(confirmationActivity);
         }
@@ -234,6 +194,11 @@ app.on('message', async ({ send, stream, activity }) => {
         
         // If moment detection needs confirmation, send that message
         if (momentResult && momentResult.needsConfirmation) {
+          // Store pending moment data separately
+          const storageKey = `team_conversation:${activity.conversation.id}`;
+          const pendingMomentKey = `${storageKey}_pending`;
+          storage.set(pendingMomentKey, momentResult.pendingMoment);
+          
           const confirmationActivity = new MessageActivity(momentResult.message);
           await send(confirmationActivity);
         }
@@ -275,57 +240,63 @@ async function handleMomentDetection(activity, botResponse) {
     
     console.log(`Detected moment: ${celebrantName} - ${celebrationType} on ${dateString}`);
     
-    // Convert date string to YYYY-MM-DD format
-    let momentDate = new Date().toISOString().split('T')[0]; // Default to today
-    
+    // Convert date string using proper relative date parsing
+    let momentDate;
     try {
-      const parsedDate = new Date(dateString);
-      if (!isNaN(parsedDate)) {
-        momentDate = parsedDate.toISOString().split('T')[0];
-      }
+      // Use DateUtils for proper relative date parsing
+      momentDate = DateUtils.parseRelativeDate(dateString);
+      console.log(`Parsed "${dateString}" to ${momentDate}`);
     } catch (error) {
       console.log(`Could not parse date "${dateString}", using today`);
+      momentDate = new Date().toISOString().split('T')[0];
     }
     
     // Check if user exists in database
-    let celebrant = await findUserByName(celebrantName);
+    let celebrant = await apiClient.findUserByName(celebrantName);
     
     if (!celebrant) {
       console.log(`User "${celebrantName}" not found in database`);
       
-      // Ask for confirmation before creating new user
-      const confirmationMessage = `🤔 I noticed you mentioned **${celebrantName}**, but they're not in our team directory yet.\n\nWould you like me to:\n\n1️⃣ Add ${celebrantName} as a new team member\n2️⃣ Skip creating this moment\n\nPlease reply with **"1"** to add them or **"2"** to skip.`;
+      // Create new user first
+      console.log('🔧 Creating new user...');
+      celebrant = await createUser(celebrantName, activity);
       
-      // Store the pending moment data for when user confirms
-      // TODO: Implement proper confirmation flow with conversation state
-      console.log(`[CONFIRMATION NEEDED] ${confirmationMessage}`);
+      if (!celebrant) {
+        console.error('Failed to create new user');
+        return;
+      }
       
-      // For now, return without creating anything - wait for user confirmation
-      return {
-        needsConfirmation: true,
-        message: confirmationMessage,
-        pendingMoment: {
-          celebrantName,
-          celebrationType,
-          momentDate,
-          originalText: activity.text,
-          fromId: activity.from.id
-        }
-      };
+      console.log(`✅ Created new user: ${celebrant.name}`);
     }
     
-    if (celebrant) {
-      // Create the moment using correct API schema
-      const momentData = {
-        person_name: celebrant.name,
-        moment_type: celebrationType,
-        moment_date: momentDate,
-        description: activity.text,
-        created_by: activity.from.id || 'admin_teams_id'
-      };
-      
-      const moment = await createMoment(momentData);
+    // Create the moment (for both existing and new users)
+    console.log('🔧 Creating moment...');
+    const momentData = {
+      person_name: celebrant.name,
+      moment_type: celebrationType,
+      moment_date: momentDate,
+      description: activity.text,
+      created_by: activity.from.id || config.adminTeamsId
+    };
+    
+    const moment = await createMoment(momentData);
+    
+    if (moment) {
       console.log(`✅ Moment created: ${celebrant.name} - ${celebrationType} on ${momentDate}`);
+      
+      // Give confirmation message AFTER creation
+      const confirmationMessage = `🎉 **Moment Created!**\n\n✅ **${celebrant.name}**'s **${celebrationType}** on **${momentDate}**\n\nThe team will be notified! 🎊`;
+      
+      return {
+        needsConfirmation: false,
+        message: confirmationMessage
+      };
+    } else {
+      console.error('Failed to create moment');
+      return {
+        needsConfirmation: false,
+        message: `❌ Sorry, there was an issue creating the moment for ${celebrant.name}. Please try again.`
+      };
     }
     
   } catch (error) {
@@ -333,18 +304,11 @@ async function handleMomentDetection(activity, botResponse) {
   }
 }
 
-async function findUserByName(name) {
-  try {
-    // Use the apiClient's findUserByName method
-    return await apiClient.findUserByName(name);
-  } catch (error) {
-    console.error('Error finding user:', error);
-    return null;
-  }
-}
+
 
 async function createUser(name, activity) {
   try {
+    console.log('🔧 Starting user creation process...');
     // Generate a unique teams_user_id to avoid conflicts
     const baseUserId = activity.from.id || `teams-${name.toLowerCase()}`;
     const timestamp = Date.now();
@@ -353,23 +317,33 @@ async function createUser(name, activity) {
     const userData = {
       teams_user_id: uniqueUserId,
       name: name,
-      email: `${name.toLowerCase()}@company.com`,
+      email: `${name.toLowerCase()}@${config.emailDomain || 'company.com'}`,
       is_admin: false
     };
     
-    console.log('Creating user with payload:', userData);
-    return await apiClient.createUser(userData);
+    console.log('🔧 Creating user with payload:', userData);
+    const result = await apiClient.createUser(userData);
+    console.log('✅ User created successfully:', result);
+    return result;
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('❌ ERROR in createUser function:', error);
+    console.error('❌ Error message:', error.message);
+    console.error('❌ Error stack:', error.stack);
     return null;
   }
 }
 
 async function createMoment(momentData) {
   try {
-    return await apiClient.createMoment(momentData);
+    console.log('🔧 Starting moment creation process...');
+    console.log('🔧 Creating moment with data:', momentData);
+    const result = await apiClient.createMoment(momentData);
+    console.log('✅ Moment created successfully:', result);
+    return result;
   } catch (error) {
-    console.error('Error creating moment:', error);
+    console.error('❌ ERROR in createMoment function:', error);
+    console.error('❌ Error message:', error.message);
+    console.error('❌ Error stack:', error.stack);
     return null;
   }
 }

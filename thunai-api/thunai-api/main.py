@@ -6,15 +6,16 @@ from app.core.config import settings
 from app.routers import users, accolades, gossips, quests, thoughts, moments, greetings, moment_analysis
 
 
-@asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     await db_manager.create_pool()
-    print("Database connected successfully!")
+    if settings.enable_debug_logs:
+        print("Database connected successfully!")
+    
     yield
-    # Shutdown
+    
     await db_manager.close_pool()
-    print("Database connection closed.")
+    if settings.enable_debug_logs:
+        print("Database connection closed.")
 
 
 app = FastAPI(
@@ -27,7 +28,7 @@ app = FastAPI(
 # CORS middleware for Teams bot
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3978", "http://127.0.0.1:3978"],
+    allow_origins=settings.allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -56,4 +57,4 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host=settings.host, port=settings.port)

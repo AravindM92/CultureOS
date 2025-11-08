@@ -4,9 +4,10 @@
  */
 
 const axios = require('axios');
+const config = require('../config');
 
 class ThunaiAPIClient {
-    constructor(baseURL = 'http://127.0.0.1:8000/api/v1') {
+    constructor(baseURL = config.apiBaseURL || 'http://127.0.0.1:8000/api/v1') {
         this.baseURL = baseURL;
         this.client = axios.create({
             baseURL: this.baseURL,
@@ -144,13 +145,6 @@ class ThunaiAPIClient {
     // ==========================================
     // MOMENT ANALYSIS & CREATION
     // ==========================================
-
-    async analyzeMomentText(text) {
-        // DISABLED: This function was creating wrong moment entries
-        // The LLM-first approach in handleMomentDetection should handle moments instead
-        console.log('analyzeMomentText disabled - using LLM-first approach instead');
-        return null;
-    }
 
     async createMoment(momentData) {
         try {
@@ -365,7 +359,7 @@ class ThunaiAPIClient {
     async testConnection() {
         try {
             // Use axios directly for health check since it's outside /api/v1
-            const response = await axios.get('http://127.0.0.1:8000/health');
+            const response = await axios.get(config.apiHealthURL || 'http://127.0.0.1:8000/health');
             return response.data.status === 'healthy';
         } catch (error) {
             console.error('API connection test failed:', error.message);

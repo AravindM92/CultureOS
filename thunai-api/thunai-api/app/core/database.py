@@ -12,7 +12,9 @@ class DatabaseManager:
         # For SQLite, ensure database file exists
         if not Path(self._db_path).exists():
             raise RuntimeError(f"Database file not found: {self._db_path}")
-        print(f"Using SQLite database: {self._db_path}")
+        from app.core.config import settings
+        if settings.enable_debug_logs:
+            print(f"Using SQLite database: {self._db_path}")
     
     async def close_pool(self):
         # No pool to close for SQLite
