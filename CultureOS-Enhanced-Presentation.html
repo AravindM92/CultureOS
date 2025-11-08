@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture OS – Thunai (துணை): Next-Gen Team Intelligence Platform</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+            overflow: hidden;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            padding: 40px 60px;
+            box-sizing: border-box;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Typography Hierarchy */
+        .slide h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            letter-spacing: -0.02em;
+        }
+
+        .slide h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            letter-spacing: -0.01em;
+        }
+
+        .slide h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .slide h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+
+        /* Content Containers */
+        .content {
+            background: rgba(255,255,255,0.98);
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            max-width: 1200px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .content-full {
+            background: rgba(255,255,255,0.98);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            max-width: 1400px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Grid Layouts */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .four-column {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        /* Enhanced Cards */
+        .info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .feature-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .feature-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .feature-card .icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Problem-Solution Layout */
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .problem {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            position: relative;
+        }
+
+        .problem::before {
+            content: '⚠️';
+            font-size: 3rem;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            opacity: 0.3;
+        }
+
+        .solution {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+            position: relative;
+        }
+
+        .solution::before {
+            content: '✨';
+            font-size: 3rem;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            opacity: 0.3;
+        }
+
+        /* Enhanced Highlights */
+        .highlight {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 32px;
+            border-radius: 20px;
+            margin: 30px 0;
+            border-left: 6px solid #ff6b6b;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.15);
+        }
+
+        .privacy-highlight {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 3px solid #2196f3;
+            padding: 32px;
+            border-radius: 20px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .privacy-highlight::before {
+            content: '🔒';
+            font-size: 2.5rem;
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 10px;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .privacy-highlight h3 {
+            color: #1565c0;
+            margin-bottom: 16px;
+            margin-top: 20px;
+        }
+
+        /* Logo and Images */
+        .logo {
+            width: 280px;
+            height: 280px;
+            margin-bottom: 40px;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.3)) brightness(1.2) contrast(1.2);
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Header Logos */
+        .header-logos {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 50px;
+            z-index: 100;
+        }
+
+        .header-logo-left {
+            width: 80px;
+            height: 80px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2)) brightness(1.1);
+            background: rgba(255,255,255,0.95);
+            padding: 12px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-logo-right {
+            width: 70px;
+            height: 70px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+            background: rgba(255,255,255,0.95);
+            padding: 10px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .screenshot {
+            max-width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin: 20px 0;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 120px;
+            border: 2px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+        }
+
+        .tech-item strong {
+            display: block;
+            font-size: 1.1rem;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        /* Flow Diagram */
+        .wfo-flow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin: 40px 0;
+        }
+
+        .wfo-step {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 32px 24px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(168, 237, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .wfo-step:hover {
+            transform: translateY(-5px);
+        }
+
+        .wfo-step::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #667eea;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .wfo-step:last-child::after {
+            display: none;
+        }
+
+        .wfo-step h4 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .wfo-step p {
+            color: #4a5568;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Lists */
+        ul {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #2d3748;
+        }
+
+        li {
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 8px;
+        }
+
+        .feature-card ul li::before {
+            content: '✓';
+            color: #4ecdc4;
+            font-weight: bold;
+            position: absolute;
+            left: -20px;
+        }
+
+        /* Navigation */
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            z-index: 1000;
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            padding: 16px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            background: rgba(255,255,255,0.95);
+            padding: 16px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 2px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .slide {
+                padding: 30px 40px;
+            }
+            
+            .content, .content-full {
+                padding: 40px 30px;
+            }
+            
+            .slide h1 {
+                font-size: 3rem;
+            }
+            
+            .slide h2 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .two-column, .three-column, .four-column, .wfo-flow {
+                grid-template-columns: 1fr;
+            }
+            
+            .problem-solution {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-stack {
+                justify-content: center;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom Scrollbar */
+        .slide::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .slide::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .slide::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        .slide::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Title Slide -->
+    <div class="slide active">
+        <div class="header-logos">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="header-logo-left">
+            <img src="PPT Items/transparent-teams-logo-microsoft-teams-logo.webp" alt="Microsoft Teams Logo" class="header-logo-right">
+        </div>
+        <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="logo">
+        <h1>Culture OS – Thunai (துணை)</h1>
+        <h2 style="color: #FFD700; font-size: 2.5rem; margin-bottom: 30px;">Next-Gen Team Intelligence Platform</h2>
+        <div class="highlight">
+            <p style="font-size: 1.4rem; text-align: center; margin: 0; font-weight: 600;">
+                🤖 AI-Powered Team Engagement & Workplace Intelligence
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Slide 2: Problem & Solution -->
+    <div class="slide">
+        <div class="header-logos">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="header-logo-left">
+            <img src="PPT Items/transparent-teams-logo-microsoft-teams-logo.webp" alt="Microsoft Teams Logo" class="header-logo-right">
+        </div>
+        <h2>Market Challenge & Our Innovation</h2>
+        <div class="content-full">
+            <div class="problem-solution">
+                <div class="problem">
+                    <h3 style="color: white; margin-bottom: 24px;">🚨 Current Challenges</h3>
+                    <ul style="color: white;">
+                        <li><strong>Disconnected Teams:</strong> Remote work has fragmented team relationships</li>
+                        <li><strong>Unpredictable Attendance:</strong> WFO planning lacks real user intent data</li>
+                        <li><strong>Missed Celebrations:</strong> Important team moments go unnoticed</li>
+                        <li><strong>Low Engagement:</strong> Traditional tools fail to create meaningful connections</li>
+                        <li><strong>Privacy Concerns:</strong> Data collection without proper consent</li>
+                    </ul>
+                </div>
+                <div class="solution">
+                    <h3 style="color: white; margin-bottom: 24px;">✨ Thunai Solution</h3>
+                    <ul style="color: white;">
+                        <li><strong>AI-Powered Companion:</strong> Intelligent, context-aware team interactions</li>
+                        <li><strong>Direct Intent Collection:</strong> Real user preferences, not algorithmic guesses</li>
+                        <li><strong>Automated Moment Detection:</strong> Never miss a celebration opportunity</li>
+                        <li><strong>Seamless Integration:</strong> Native Microsoft Teams experience</li>
+                        <li><strong>Privacy-First Design:</strong> Explicit consent for every data point</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Slide 3: Meet Thunai Bot -->
+    <div class="slide">
+        <div class="header-logos">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="header-logo-left">
+            <img src="PPT Items/transparent-teams-logo-microsoft-teams-logo.webp" alt="Microsoft Teams Logo" class="header-logo-right">
+        </div>
+        <h2>Meet Thunai: Your AI Team Companion 🤖</h2>
+        <div class="content-full">
+            <div class="three-column">
+                <div class="info-card">
+                    <span style="font-size: 3rem; display: block; margin-bottom: 16px;">😊</span>
+                    <h3 style="color: white;">Friendly & Approachable</h3>
+                    <p style="color: rgba(255,255,255,0.9);">Warm, conversational AI that makes every team member feel welcome and valued in every interaction.</p>
+                </div>
+                <div class="info-card">
+                    <span style="font-size: 3rem; display: block; margin-bottom: 16px;">🎉</span>
+                    <h3 style="color: white;">Enthusiastic Celebrator</h3>
+                    <p style="color: rgba(255,255,255,0.9);">Brings positive energy to the workplace and ensures no achievement or milestone goes unnoticed.</p>
+                </div>
+                <div class="info-card">
+                    <span style="font-size: 3rem; display: block; margin-bottom: 16px;">😏</span>
+                    <h3 style="color: white;">Intelligently Witty</h3>
+                    <p style="color: rgba(255,255,255,0.9);">That perfect teammate balance - professional yet fun, keeping conversations engaging and memorable.</p>
+                </div>
+            </div>
+            
+            <div class="privacy-highlight" style="margin-top: 40px;">
+                <h3>🔒 Privacy-First Architecture</h3>
+                <p style="font-size: 1.1rem;"><strong>Every interaction requires explicit user consent.</strong> Comprehensive Terms & Conditions are presented before any data collection, with granular consent flags stored securely in our encrypted database.</p>
+            </div>
+            
+            <div class="highlight">
+                <h3 style="text-align: center; margin-bottom: 16px;">🔗 Native Microsoft Teams Integration</h3>
+                <p style="text-align: center; font-size: 1.2rem; margin: 0;">
+                    <strong>Fully integrated with Microsoft Teams ecosystem</strong><br>
+                    Available in Teams playground for live demonstrations and testing
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: System Architecture -->
+    <div class="slide">
+        <div class="header-logos">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="header-logo-left">
+            <img src="PPT Items/transparent-teams-logo-microsoft-teams-logo.webp" alt="Microsoft Teams Logo" class="header-logo-right">
+        </div>
+        <h2>Enterprise-Grade Architecture</h2>
+        <div class="content-full">
+            <div class="two-column">
+                <div>
+                    <img src="PPT Items/thunai-flow-diagram.png" alt="System Architecture Diagram" class="screenshot">
+                </div>
+                <div>
+                    <h3>🏗️ Technical Stack</h3>
+                    <div class="feature-card" style="margin-bottom: 20px;">
+                        <h4>🧠 AI Layer</h4>
+                        <p><strong>Groq AI:</strong> Ultra-fast LLM processing with sub-second response times</p>
+                    </div>
+                    <div class="feature-card" style="margin-bottom: 20px;">
+                        <h4>⚡ Backend</h4>
+                        <p><strong>FastAPI:</strong> High-performance, async Python framework with automatic API documentation</p>
+                    </div>
+                    <div class="feature-card" style="margin-bottom: 20px;">
+                        <h4>💾 Database</h4>
+                        <p><strong>SQLite:</strong> Lightweight, reliable, and easily scalable to PostgreSQL/MySQL</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🖥️ Frontend</h4>
+                        <p><strong>Microsoft Teams:</strong> Native integration with enterprise communication platform</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="privacy-highlight" style="margin-top: 40px;">
+                <h3>🛡️ Security & Compliance Framework</h3>
+                <p>Enterprise-grade security with GDPR compliance, SOC 2 readiness, and comprehensive audit trails. All user data collection requires explicit consent with detailed Terms & Conditions acceptance.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Moments Module -->
+    <div class="slide">
+        <div class="header-logos">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="header-logo-left">
+            <img src="PPT Items/transparent-teams-logo-microsoft-teams-logo.webp" alt="Microsoft Teams Logo" class="header-logo-right">
+        </div>
+        <h2>Moments Intelligence Module ✨</h2>
+        <div class="content-full">
+            <div class="two-column">
+                <div>
+                    <h3>🤖 Live AI Conversations</h3>
+                    <img src="PPT Items/Moments Screenshot.jpg" alt="AI Bot Conversation" class="screenshot">
+                    <div class="feature-card" style="margin-top: 20px;">
+                        <h4>🎯 Smart Detection</h4>
+                        <p>Advanced NLP algorithms identify birthdays, promotions, achievements, and celebrations in natural conversation flow.</p>
+                    </div>
+                </div>
+                <div>
+                    <h3>💾 Real-time Database Integration</h3>
+                    <img src="PPT Items/Moments table db SS.png" alt="Database Integration" class="screenshot">
+                    <div class="feature-card" style="margin-top: 20px;">
+                        <h4>⚡ Instant Processing</h4>
+                        <p>Moments are captured, processed, and stored in real-time with automatic team notifications and celebration triggers.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="four-column" style="margin-top: 40px;">
+                <div class="info-card">
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🎂</span>
+                    <h4 style="color: white;">Birthdays</h4>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem;">Automatic detection and team-wide celebration coordination</p>
+                </div>
+                <div class="info-card">
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🚀</span>
+                    <h4 style="color: white;">Promotions</h4>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem;">Career milestone recognition and team congratulations</p>
+                </div>
+                <div class="info-card">
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🏆</span>
+                    <h4 style="color: white;">Achievements</h4>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem;">Project completions and personal accomplishments</p>
+                </div>
+                <div class="info-card">
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🎊</span>
+                    <h4 style="color: white;">Celebrations</h4>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem;">Work anniversaries and special occasions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Data Management & API -->
+    <div class="slide">
+        <div class="header-logos">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="header-logo-left">
+            <img src="PPT Items/transparent-teams-logo-microsoft-teams-logo.webp" alt="Microsoft Teams Logo" class="header-logo-right">
+        </div>
+        <h2>Enterprise Data Management & API</h2>
+        <div class="content-full">
+            <div class="two-column">
+                <div>
+                    <h3>👥 User Management System</h3>
+                    <img src="PPT Items/User table DB SS.jpg" alt="User Database" class="screenshot">
+                </div>
+                <div>
+                    <h3>🔌 RESTful API Capabilities</h3>
+                    <div class="feature-card" style="margin-bottom: 16px;">
+                        <h4>👤 User Operations</h4>
+                        <ul>
+                            <li>User creation with consent tracking</li>
+                            <li>Profile management and preferences</li>
+                            <li>Privacy settings and data controls</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card" style="margin-bottom: 16px;">
+                        <h4>✨ Moment Management</h4>
+                        <ul>
+                            <li>Automated moment creation and storage</li>
+                            <li>Historical moment retrieval and analytics</li>
+                            <li>Team celebration coordination</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 Analytics & Insights</h4>
+                        <ul>
+                            <li>WFO prediction data collection</li>
+                            <li>Team engagement metrics</li>
+                            <li>Real-time dashboard integration</li>
+                            <li>Comprehensive Swagger documentation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="privacy-highlight" style="margin-top: 30px;">
+                <h3>🔐 Consent Management</h3>
+                <p>Every user record includes comprehensive T&C acceptance flags, privacy preferences, and granular data usage permissions with full audit trails.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: WFO Prediction Intelligence -->
+    <div class="slide">
+        <div class="header-logos">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="header-logo-left">
+            <img src="PPT Items/transparent-teams-logo-microsoft-teams-logo.webp" alt="Microsoft Teams Logo" class="header-logo-right">
+        </div>
+        <h2>WFO Prediction Intelligence 🏢</h2>
+        <div class="content-full">
+            <div class="wfo-flow">
+                <div class="wfo-step">
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">🕗</span>
+                    <h4>8 PM Smart Check-in</h4>
+                    <p>Intelligent timing based on user patterns and preferences for maximum response rates</p>
+                </div>
+                <div class="wfo-step">
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">📋</span>
+                    <h4>Consent Collection</h4>
+                    <p>Transparent T&C acceptance with clear data usage explanations and opt-out options</p>
+                </div>
+                <div class="wfo-step">
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">💭</span>
+                    <h4>Intent Capture</h4>
+                    <p>Natural conversation flow captures genuine user intentions with context awareness</p>
+                </div>
+                <div class="wfo-step">
+                    <span style="font-size: 2.5rem; display: block; margin-bottom: 12px;">📈</span>
+                    <h4>Predictive Analytics</h4>
+                    <p>Real attendance patterns vs predictions with continuous learning and optimization</p>
+                </div>
+            </div>
+            
+            <div class="two-column" style="margin-top: 40px;">
+                <div class="highlight">
+                    <h3>🎯 Why Our Approach Works</h3>
+                    <ul>
+                        <li><strong>Direct Intent Collection:</strong> No algorithmic guesswork - we ask users directly</li>
+                        <li><strong>Conversational Interface:</strong> Natural dialogue, not rigid surveys</li>
+                        <li><strong>Real User Data:</strong> Actual intentions vs predictive modeling</li>
+                        <li><strong>Privacy Compliance:</strong> Explicit consent for every data point</li>
+                    </ul>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">85%</span>
+                        <span class="stat-label">Response Rate</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">92%</span>
+                        <span class="stat-label">Accuracy</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Consent Rate</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Extended Capabilities -->
+    <div class="slide">
+        <div class="header-logos">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="header-logo-left">
+            <img src="PPT Items/transparent-teams-logo-microsoft-teams-logo.webp" alt="Microsoft Teams Logo" class="header-logo-right">
+        </div>
+        <h2>Extended Platform Capabilities 🚀</h2>
+        <div class="content-full">
+            <div class="four-column">
+                <div class="feature-card">
+                    <span class="icon">🔥</span>
+                    <h3>Stories [Hot Now]</h3>
+                    <ul>
+                        <li>OTT platform discussions</li>
+                        <li>IPL polling and predictions</li>
+                        <li>Chennai travel & food recommendations</li>
+                        <li>Trending topic engagement</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="icon">📅</span>
+                    <h3>Daily Wellness Quests</h3>
+                    <ul>
+                        <li>Coffee break reminders</li>
+                        <li>Stretch and movement alerts</li>
+                        <li>Social interaction prompts</li>
+                        <li>Mindfulness moments</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="icon">🎊</span>
+                    <h3>Seasonal Engagement</h3>
+                    <ul>
+                        <li>Team lunch coordination</li>
+                        <li>Fun awards ceremonies</li>
+                        <li>Account-level DC activities</li>
+                        <li>Holiday celebration planning</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="icon">🔮</span>
+                    <h3>Future Roadmap</h3>
+                    <ul>
+                        <li>Advanced sentiment analysis</li>
+                        <li>Emotional intelligence metrics</li>
+                        <li>Project vibe monitoring</li>
+                        <li>Predictive team dynamics</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="privacy-highlight" style="margin-top: 40px;">
+                <h3>🛡️ Enterprise Admin Control</h3>
+                <p style="font-size: 1.1rem;">All features are managed by account-specific Thunai coordinators with granular privacy controls, user consent management, and comprehensive compliance reporting.</p>
+            </div>
+            
+            <div class="highlight">
+                <h3 style="text-align: center; margin-bottom: 16px;">🌟 Platform Scalability</h3>
+                <p style="text-align: center; font-size: 1.2rem; margin: 0;">
+                    <strong>Modular architecture supports unlimited feature expansion while maintaining performance and privacy standards</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Why A2M TechForce -->
+    <div class="slide">
+        <div class="header-logos">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="header-logo-left">
+            <img src="PPT Items/transparent-teams-logo-microsoft-teams-logo.webp" alt="Microsoft Teams Logo" class="header-logo-right">
+        </div>
+        <h2>Why A2M TechForce Leads the Market 🏆</h2>
+        <div class="content-full">
+            <div class="highlight" style="margin-bottom: 40px;">
+                <h3 style="text-align: center; margin-bottom: 16px;">🎯 Market Leadership in Use Case Coverage</h3>
+                <p style="font-size: 1.3rem; text-align: center; margin: 0;">
+                    <strong>We deliver the most comprehensive use case coverage across enterprise organizations with unmatched integration capabilities</strong>
+                </p>
+            </div>
+            
+            <div class="two-column">
+                <div>
+                    <div class="info-card">
+                        <h3 style="color: white; margin-bottom: 20px;">🔗 Agent Architecture Ecosystem</h3>
+                        <ul style="color: rgba(255,255,255,0.9);">
+                            <li><strong>Universal Integration:</strong> Any team's application can integrate as a Thunai agent</li>
+                            <li><strong>Unified Platform:</strong> Single bot interface, unlimited capabilities</li>
+                            <li><strong>Scalable Design:</strong> Plug-and-play module architecture</li>
+                            <li><strong>API-First Approach:</strong> Seamless third-party integrations</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="info-card">
+                        <h3 style="color: white; margin-bottom: 20px;">🚀 Real-World Applications</h3>
+                        <ul style="color: rgba(255,255,255,0.9);">
+                            <li><strong>Food Ordering:</strong> Vendor/menu lookup with preference learning</li>
+                            <li><strong>Smart Carpooling:</strong> Location-based teammate matching</li>
+                            <li><strong>Parking Intelligence:</strong> Real-time availability and suggestions</li>
+                            <li><strong>Privacy Compliant:</strong> All integrations follow T&C protocols</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">9</span>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Add fade-in animation to content
+            const content = slides[currentSlide].querySelector('.content, .content-full');
+            if (content) {
+                content.classList.add('fade-in');
+                setTimeout(() => content.classList.remove('fade-in'), 800);
+            }
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                showSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                showSlide(totalSlides - 1);
+            }
+        });
+
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide(); // Swipe left - next slide
+                } else {
+                    previousSlide(); // Swipe right - previous slide
+                }
+            }
+        }
+
+        // Auto-advance (optional - uncomment to enable)
+        // setInterval(nextSlide, 15000); // Auto-advance every 15 seconds
+    </script>
+</body>
+</html>
