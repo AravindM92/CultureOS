@@ -6,11 +6,13 @@ const { GroqChatModel } = require('./groqChatModel');
 const { MockThunaiResponses } = require('./mockResponses');
 const { DateUtils } = require('./dateUtils');
 const ThunaiAPIClient = require('./apiClient');
+const WFOHandler = require('../wfo/WFOHandler');
 
 // Create instances
 const mockResponses = new MockThunaiResponses();
 const apiClient = new ThunaiAPIClient();
 const storage = new LocalStorage();
+// WFOHandler will be created when groqModel is available
 
 // Load instructions
 const fs = require('fs');
@@ -63,6 +65,57 @@ app.on('message', async ({ send, stream, activity }) => {
       role: 'user',
       content: activity.text
     });
+
+    // ✅ WFO Integration - User-triggered testing + Proactive scheduling
+    const userId = activity.from.name || activity.from.id;
+    
+    // Initialize WFO Handler ONCE (persistent across messages)
+    if (!global.wfoHandler) {
+      try {
+        const groqModel = new GroqChatModel({
+          apiKey: config.groqApiKey,
+          model: config.groqModelName
+        });
+        
+        global.wfoHandler = new WFOHandler(groqModel);
+        console.log('[WFO] Handler initialized and cached globally');
+      } catch (error) {
+        console.error('[WFO] Failed to initialize handler:', error);
+      }
+    }
+    
+    try {
+      // Check for WFO triggers (both user keywords and conversation states)
+      const userContext = { 
+        userId, 
+        activityId: activity.id,
+        conversationId: activity.conversation.id 
+      };
+      
+      if (global.wfoHandler && await global.wfoHandler.canHandle(activity.text, userContext)) {
+        console.log(`[WFO] Processing WFO interaction for user ${userId}: "${activity.text}"`);
+        
+        const wfoResponse = await global.wfoHandler.process(activity.text, userContext);
+        
+        if (wfoResponse && wfoResponse.message) {
+          const wfoActivity = new MessageActivity(wfoResponse.message);
+          await send(wfoActivity);
+          
+          // Store WFO conversation in history
+          messages.push({
+            role: 'assistant', 
+            content: wfoResponse.message
+          });
+          storage.set(storageKey, messages);
+          
+          console.log(`[WFO] Sent ${wfoResponse.type} response to user ${userId}`);
+          return; // Exit early - WFO handled the message
+        }
+      }
+    } catch (error) {
+      console.error('[WFO] Error in WFO integration:', error);
+      // Continue to normal AI processing if WFO fails
+    }
 
     // No more confirmation handling needed - we create directly    // Try to use Groq AI (will fall back to mock if blocked by firewall)
     try {

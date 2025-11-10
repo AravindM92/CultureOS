@@ -28,11 +28,20 @@ Stop-Process -Name "node" -Force -ErrorAction SilentlyContinue
 # Kill processes by port
 Write-Host "Stopping processes on specific ports..." -ForegroundColor Yellow
 
-# Stop port 8000 (API)
+# Stop port 8000 (ThunAI API)
 $port8000 = Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue
 if ($port8000) {
     $port8000 | ForEach-Object {
-        Write-Host "Stopping process on port 8000 (PID: $($_.OwningProcess))" -ForegroundColor Yellow
+        Write-Host "Stopping process on port 8000 ThunAI API (PID: $($_.OwningProcess))" -ForegroundColor Yellow
+        Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue
+    }
+}
+
+# Stop port 8001 (WFO API)
+$port8001 = Get-NetTCPConnection -LocalPort 8001 -ErrorAction SilentlyContinue
+if ($port8001) {
+    $port8001 | ForEach-Object {
+        Write-Host "Stopping process on port 8001 WFO API (PID: $($_.OwningProcess))" -ForegroundColor Yellow
         Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue
     }
 }
@@ -62,12 +71,19 @@ if ($remainingJobs) {
 }
 
 $port8000Active = Test-NetConnection -ComputerName "localhost" -Port 8000 -WarningAction SilentlyContinue
+$port8001Active = Test-NetConnection -ComputerName "localhost" -Port 8001 -WarningAction SilentlyContinue
 $port3978Active = Test-NetConnection -ComputerName "localhost" -Port 3978 -WarningAction SilentlyContinue
 
 if (-not $port8000Active.TcpTestSucceeded) {
-    Write-Host "✅ Port 8000 (API) is free" -ForegroundColor Green
+    Write-Host "✅ Port 8000 (ThunAI API) is free" -ForegroundColor Green
 } else {
-    Write-Host "⚠️ Port 8000 (API) still in use" -ForegroundColor Yellow
+    Write-Host "⚠️ Port 8000 (ThunAI API) still in use" -ForegroundColor Yellow
+}
+
+if (-not $port8001Active.TcpTestSucceeded) {
+    Write-Host "✅ Port 8001 (WFO API) is free" -ForegroundColor Green
+} else {
+    Write-Host "⚠️ Port 8001 (WFO API) still in use" -ForegroundColor Yellow
 }
 
 if (-not $port3978Active.TcpTestSucceeded) {

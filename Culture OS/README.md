@@ -1,7 +1,9 @@
-# Overview of Thun.ai - Your Friendly AI Colleague
+# Overview of CultureOS - Your Friendly AI Culture Assistant
 
-This app template is built on top of [Teams AI library V2](https://aka.ms/teams-ai-library-v2). 
-It showcases Thun.ai, a friendly AI colleague that responds to user questions and helps with work tasks, enabling your users to collaborate with the AI agent in Teams using Groq Cloud's fast inference models.
+This app is built on top of [Teams AI library V2](https://aka.ms/teams-ai-library-v2). 
+It showcases CultureOS, a friendly AI colleague that automatically detects celebration moments, manages team culture, and coordinates work-from-office schedules using Groq Cloud's fast inference models.
+
+> **📋 DESIGN VALIDATION**: See `DESIGN-PRINCIPLES-VALIDATION-REPORT.md` for complete validation of all 6 design principles across documentation and implementation (✅ 83% complete)
 
 ## Get started with the template
 

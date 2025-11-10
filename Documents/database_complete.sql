@@ -230,6 +230,87 @@ BEGIN
 END;
 
 -- ==========================================
+-- 7. WFO PREDICTION TABLES (NEW MODULE)
+-- ==========================================
+
+-- WFO Availability table for storing user office plans
+CREATE TABLE IF NOT EXISTS wfo_availability (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    week_start_date DATE NOT NULL,
+    monday_status TEXT CHECK(monday_status IN ('office', 'home', 'hybrid', 'leave')),
+    tuesday_status TEXT CHECK(tuesday_status IN ('office', 'home', 'hybrid', 'leave')),
+    wednesday_status TEXT CHECK(wednesday_status IN ('office', 'home', 'hybrid', 'leave')),
+    thursday_status TEXT CHECK(thursday_status IN ('office', 'home', 'hybrid', 'leave')),
+    friday_status TEXT CHECK(friday_status IN ('office', 'home', 'hybrid', 'leave')),
+    office_days_count INTEGER DEFAULT 0,
+    is_compliant BOOLEAN DEFAULT FALSE, -- meets 3-day minimum
+    collection_method TEXT NOT NULL CHECK(collection_method IN ('weekly', 'daily')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, week_start_date)
+);
+
+-- WFO Collection Attempts table for tracking collection history and smart stopping
+CREATE TABLE IF NOT EXISTS wfo_collection_attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    week_start_date DATE NOT NULL,
+    attempt_type TEXT NOT NULL CHECK(attempt_type IN ('weekly_friday', 'weekly_monday_followup', 'daily')),
+    attempt_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    response_received BOOLEAN DEFAULT FALSE,
+    response_data TEXT, -- LLM extracted data
+    success BOOLEAN DEFAULT FALSE,
+    reason TEXT
+);
+
+-- WFO Scheduled Messages table for proactive message scheduling
+CREATE TABLE IF NOT EXISTS wfo_scheduled_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    message_type TEXT NOT NULL CHECK(message_type IN ('weekly_friday', 'weekly_monday_followup', 'daily_evening')),
+    scheduled_for DATETIME NOT NULL,
+    week_target DATE NOT NULL, -- which week we're collecting for
+    status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'sent', 'completed', 'cancelled')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sent_at DATETIME,
+    completed_at DATETIME
+);
+
+-- Create indexes for WFO tables performance
+CREATE INDEX IF NOT EXISTS idx_wfo_availability_user_week ON wfo_availability(user_id, week_start_date);
+CREATE INDEX IF NOT EXISTS idx_wfo_attempts_user_week ON wfo_collection_attempts(user_id, week_start_date);
+CREATE INDEX IF NOT EXISTS idx_wfo_scheduled_user ON wfo_scheduled_messages(user_id);
+CREATE INDEX IF NOT EXISTS idx_wfo_scheduled_time ON wfo_scheduled_messages(scheduled_for);
+
+-- ==========================================
+-- 8. WFO SAMPLE DATA
+-- ==========================================
+
+-- Sample WFO availability data (for testing)
+INSERT OR REPLACE INTO wfo_availability 
+(user_id, week_start_date, monday_status, tuesday_status, wednesday_status, thursday_status, friday_status, office_days_count, is_compliant, collection_method)
+VALUES 
+('test_user_1', '2025-11-11', NULL, 'office', NULL, NULL, NULL, 1, FALSE, 'weekly'),
+('test_user_2', '2025-11-11', 'office', 'office', 'home', 'office', 'office', 4, TRUE, 'weekly'),
+('test_user_3', '2025-11-11', 'office', NULL, 'office', NULL, NULL, 2, FALSE, 'daily'),
+('muthu.aravindan', '2025-11-11', NULL, NULL, NULL, NULL, NULL, 0, FALSE, 'weekly');
+
+-- Sample collection attempts
+INSERT INTO wfo_collection_attempts
+(user_id, week_start_date, attempt_type, response_received, response_data, success, reason)
+VALUES 
+('test_user_1', '2025-11-11', 'weekly_friday', FALSE, NULL, FALSE, 'No response received'),
+('test_user_3', '2025-11-11', 'daily', TRUE, 'Monday and Wednesday office', TRUE, 'Successfully collected partial data');
+
+-- Sample scheduled messages
+INSERT INTO wfo_scheduled_messages
+(user_id, message_type, scheduled_for, week_target, status)
+VALUES 
+('test_user_1', 'daily_evening', '2025-11-11 20:00:00', '2025-11-11', 'pending'),
+('muthu.aravindan', 'weekly_friday', '2025-11-15 20:00:00', '2025-11-18', 'pending');
+
+-- ==========================================
 -- SETUP COMPLETE
 -- ==========================================
 
@@ -238,3 +319,4 @@ SELECT 'Database setup completed successfully!' as message;
 SELECT 'Users created: ' || COUNT(*) as user_count FROM users;
 SELECT 'Moments created: ' || COUNT(*) as moment_count FROM moments;
 SELECT 'Greetings created: ' || COUNT(*) as greeting_count FROM greetings;
+SELECT 'WFO Availability records: ' || COUNT(*) as wfo_count FROM wfo_availability;

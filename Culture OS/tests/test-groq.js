@@ -6,7 +6,7 @@ async function testGroq() {
     
     try {
         const groqModel = new GroqChatModel({
-            apiKey: "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",
+            apiKey: "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",
             model: "llama-3.1-8b-instant"
         });
 
