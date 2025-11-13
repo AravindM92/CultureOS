@@ -16,7 +16,7 @@ Write-Host ""
 
 # Build Node.js Bot (Culture OS)
 Write-Host "Installing Node.js Bot dependencies..." -ForegroundColor Green
-$botWorkingDir = "$scriptDir\Culture OS"
+$botWorkingDir = "$scriptDir\thunai-bot"
 
 if (Test-Path $botWorkingDir) {
     Write-Host "   Working Directory: $botWorkingDir" -ForegroundColor Gray
@@ -59,6 +59,31 @@ if (Test-Path $apiWorkingDir) {
     }
 } else {
     Write-Host "   Directory not found: $apiWorkingDir" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host ""
+
+# Build WFO Prediction API
+Write-Host "Installing WFO Prediction API dependencies..." -ForegroundColor Green
+$wfoWorkingDir = "$scriptDir\wfo-prediction-api"
+
+if (Test-Path $wfoWorkingDir) {
+    Write-Host "   Working Directory: $wfoWorkingDir" -ForegroundColor Gray
+    
+    Set-Location $wfoWorkingDir
+    Write-Host "   Running pip install..." -ForegroundColor Yellow
+    pip install -r requirements.txt
+    
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "   WFO Prediction API dependencies installed successfully!" -ForegroundColor Green
+    } else {
+        Write-Host "   Failed to install WFO Prediction API dependencies!" -ForegroundColor Red
+        Set-Location $scriptDir
+        exit 1
+    }
+} else {
+    Write-Host "   Directory not found: $wfoWorkingDir" -ForegroundColor Red
     exit 1
 }
 

@@ -86,7 +86,7 @@ Write-Host "🔍 Test 4: Groq API Test" -ForegroundColor Blue
 Write-Host "----------------------------------------" -ForegroundColor Gray
 try {
     $scriptDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
-    Set-Location "$scriptDir\Culture OS\tests"
+    Set-Location "$scriptDir\thunai-bot\tests"
     $groqResult = node test-groq.js 2>&1
     if ($groqResult -like "*SUCCESS*") {
         Write-Host "✅ Groq API: WORKING" -ForegroundColor Green

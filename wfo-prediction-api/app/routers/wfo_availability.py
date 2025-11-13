@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, status
 from typing import List, Optional
 from app.services.wfo_availability_service import WFOAvailabilityService
+from app.core.config import settings
 
 router = APIRouter(prefix="/availability", tags=["availability"])
 wfo_service = WFOAvailabilityService()
@@ -11,7 +12,7 @@ async def availability_health():
     return {"status": "healthy", "module": "wfo_availability"}
 
 @router.get("/check/{user_id}")
-async def check_wfo_data_needed(user_id: str, week_start_date: str = "2025-11-11"):
+async def check_wfo_data_needed(user_id: str, week_start_date: str = "2025-11-11", collection_type: str = "weekly"):
     """
     PRIMARY BOT TRIGGER ENDPOINT
     Bot calls this first to check if WFO collection is needed for user
@@ -19,11 +20,15 @@ async def check_wfo_data_needed(user_id: str, week_start_date: str = "2025-11-11
     try:
         result = await wfo_service.check_data_needed(user_id, week_start_date)
         
-        # Add additional context for bot interaction
+        # Add additional context for bot interaction based on collection type
         if result["collection_needed"]:
+            # Get prompts from config (fallback to weekly if collection_type not found)
+            prompt_config = settings.wfo_prompts.get(collection_type, settings.wfo_prompts["weekly"])
+            
             result.update({
-                "message_template": "Hope your day went well! Could you share your office plans for next week? (Monday to Friday)",
-                "llm_instruction": "Process response to extract WFO plans for the full week Monday-Friday. User may specify specific days or general patterns."
+                "message_template": prompt_config["message_template"],
+                "llm_instruction": prompt_config["llm_instruction"],
+                "collection_type": collection_type
             })
         
         return result

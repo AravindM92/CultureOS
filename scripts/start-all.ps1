@@ -23,7 +23,7 @@ $wfoJob = Start-Job -ScriptBlock {
 Write-Host "Starting Node.js Bot..." -ForegroundColor Yellow
 $botJob = Start-Job -ScriptBlock {
     param($dir)
-    Set-Location "$dir\Culture OS"
+    Set-Location "$dir\thunai-bot"
     npm start
 } -ArgumentList $scriptDir -Name "NodeBot"
 
@@ -31,7 +31,7 @@ $botJob = Start-Job -ScriptBlock {
 Write-Host "Starting Teams Playground..." -ForegroundColor Yellow
 $playgroundJob = Start-Job -ScriptBlock {
     param($dir)
-    Set-Location "$dir\Culture OS"
+    Set-Location "$dir\thunai-bot"
     npx teamsapptester start
 } -ArgumentList $scriptDir -Name "TeamsPlayground"
 
