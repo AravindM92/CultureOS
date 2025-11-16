@@ -66,55 +66,85 @@ app.on('message', async ({ send, stream, activity }) => {
       content: activity.text
     });
 
-    // ✅ WFO Integration - User-triggered testing + Proactive scheduling
+    // ✅ Simple WFO Integration - User-triggered testing
     const userId = activity.from.name || activity.from.id;
     
-    // Initialize WFO Handler ONCE (persistent across messages)
-    if (!global.wfoHandler) {
-      try {
-        const groqModel = new GroqChatModel({
-          apiKey: config.groqApiKey,
-          model: config.groqModelName
-        });
-        
-        global.wfoHandler = new WFOHandler(groqModel);
-        console.log('[WFO] Handler initialized and cached globally');
-      } catch (error) {
-        console.error('[WFO] Failed to initialize handler:', error);
-      }
+    // Simple WFO trigger - just check for "week" keyword
+    const messageLower = activity.text.toLowerCase().trim();
+    if (messageLower === 'week') {
+      console.log(`[WFO] Weekly routine triggered by user ${userId}`);
+      
+      // Simple response without complex API calls
+      const wfoMessage = `Hey ${userId}! 👋 Could you share your office plans for next week? It helps me coordinate better!`;
+      
+      // Store WFO conversation state
+      const wfoStateKey = `${storageKey}_wfo_state`;
+      storage.set(wfoStateKey, {
+        waitingFor: 'wfo_schedule_response',
+        userId: userId,
+        startedAt: new Date().toISOString()
+      });
+      
+      await send(wfoMessage);
+      
+      // Store in conversation history
+      messages.push({
+        role: 'assistant',
+        content: wfoMessage
+      });
+      storage.set(storageKey, messages);
+      
+      console.log(`[WFO] Sent weekly collection message to user ${userId}`);
+      return; // Exit early - WFO handled the message
     }
     
-    try {
-      // Check for WFO triggers (both user keywords and conversation states)
-      const userContext = { 
-        userId, 
-        activityId: activity.id,
-        conversationId: activity.conversation.id 
+    // Check if user is in WFO conversation
+    const wfoStateKey = `${storageKey}_wfo_state`;
+    const wfoState = storage.get(wfoStateKey);
+    
+    if (wfoState && wfoState.waitingFor === 'wfo_schedule_response') {
+      console.log(`[WFO] Processing WFO response from user ${userId}: "${activity.text}"`);
+      
+      // Simple pattern matching for office days
+      const officedays = [];
+      const dayPatterns = {
+        'monday': ['monday', 'mon'],
+        'tuesday': ['tuesday', 'tue', 'tues'],
+        'wednesday': ['wednesday', 'wed'],
+        'thursday': ['thursday', 'thu', 'thurs'],
+        'friday': ['friday', 'fri']
       };
       
-      if (global.wfoHandler && await global.wfoHandler.canHandle(activity.text, userContext)) {
-        console.log(`[WFO] Processing WFO interaction for user ${userId}: "${activity.text}"`);
-        
-        const wfoResponse = await global.wfoHandler.process(activity.text, userContext);
-        
-        if (wfoResponse && wfoResponse.message) {
-          const wfoActivity = new MessageActivity(wfoResponse.message);
-          await send(wfoActivity);
-          
-          // Store WFO conversation in history
-          messages.push({
-            role: 'assistant', 
-            content: wfoResponse.message
-          });
-          storage.set(storageKey, messages);
-          
-          console.log(`[WFO] Sent ${wfoResponse.type} response to user ${userId}`);
-          return; // Exit early - WFO handled the message
+      for (const [day, patterns] of Object.entries(dayPatterns)) {
+        for (const pattern of patterns) {
+          if (messageLower.includes(pattern)) {
+            officedays.push(day.charAt(0).toUpperCase() + day.slice(1));
+            break;
+          }
         }
       }
-    } catch (error) {
-      console.error('[WFO] Error in WFO integration:', error);
-      // Continue to normal AI processing if WFO fails
+      
+      let confirmationMessage;
+      if (officedays.length > 0) {
+        confirmationMessage = `Got it! You'll be in office on ${officedays.join(' and ')}. That's ${officedays.length} days. Thanks for letting me know! 🎉`;
+      } else {
+        confirmationMessage = "Thanks for the update! I'll note that you're working from home next week. 🏠";
+      }
+      
+      // Clear WFO state
+      storage.set(wfoStateKey, null);
+      
+      await send(confirmationMessage);
+      
+      // Store in conversation history
+      messages.push({
+        role: 'assistant',
+        content: confirmationMessage
+      });
+      storage.set(storageKey, messages);
+      
+      console.log(`[WFO] Processed WFO response from user ${userId}`);
+      return; // Exit early - WFO handled the message
     }
 
     // No more confirmation handling needed - we create directly    // Try to use Groq AI (will fall back to mock if blocked by firewall)
