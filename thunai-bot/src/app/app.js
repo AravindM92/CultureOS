@@ -66,58 +66,47 @@ app.on('message', async ({ send, stream, activity }) => {
       content: activity.text
     });
 
-    // ✅ WFO Integration - User-triggered testing + Proactive scheduling
+    // ✅ SIMPLE WFO: Check for triggers and handle with main LLM
     const userId = activity.from.name || activity.from.id;
     
-    // Initialize WFO Handler ONCE (persistent across messages)
+    // Initialize WFO Handler if needed
     if (!global.wfoHandler) {
-      try {
-        const groqModel = new GroqChatModel({
-          apiKey: config.groqApiKey,
-          model: config.groqModelName
-        });
-        
-        global.wfoHandler = new WFOHandler(groqModel);
-        console.log('[WFO] Handler initialized and cached globally');
-      } catch (error) {
-        console.error('[WFO] Failed to initialize handler:', error);
-      }
+      const WFOHandler = require('../wfo/WFOHandler');
+      global.wfoHandler = new WFOHandler();
     }
     
-    try {
-      // Check for WFO triggers (both user keywords and conversation states)
-      const userContext = { 
-        userId, 
-        activityId: activity.id,
-        conversationId: activity.conversation.id 
-      };
+    // Check if WFO can handle this message
+    const userContext = { userId, activityId: activity.id, conversationId: activity.conversation.id };
+    if (global.wfoHandler.canHandle(activity.text, userContext)) {
+      console.log(`[WFO] Processing: ${activity.text}`);
       
-      if (global.wfoHandler && await global.wfoHandler.canHandle(activity.text, userContext)) {
-        console.log(`[WFO] Processing WFO interaction for user ${userId}: "${activity.text}"`);
-        
-        const wfoResponse = await global.wfoHandler.process(activity.text, userContext);
-        
-        if (wfoResponse && wfoResponse.message) {
-          const wfoActivity = new MessageActivity(wfoResponse.message);
-          await send(wfoActivity);
-          
-          // Store WFO conversation in history
+      const wfoResponse = await global.wfoHandler.process(activity.text, userContext);
+      
+      if (wfoResponse) {
+        if (wfoResponse.needsLLMProcessing) {
+          // Let main LLM process the WFO response
+          console.log(`[WFO] Letting main LLM process: ${wfoResponse.message}`);
+          // Add WFO context to messages for LLM
           messages.push({
-            role: 'assistant', 
+            role: 'system',
+            content: `User is responding to WFO ${wfoResponse.wfoType} question. Extract office days from: "${wfoResponse.message}" and respond with confirmation.`
+          });
+          messages.push({
+            role: 'user',
             content: wfoResponse.message
           });
+          // Continue to main LLM processing below
+        } else {
+          // Direct WFO response
+          await send(new MessageActivity(wfoResponse.message));
+          messages.push({ role: 'assistant', content: wfoResponse.message });
           storage.set(storageKey, messages);
-          
-          console.log(`[WFO] Sent ${wfoResponse.type} response to user ${userId}`);
-          return; // Exit early - WFO handled the message
+          return;
         }
       }
-    } catch (error) {
-      console.error('[WFO] Error in WFO integration:', error);
-      // Continue to normal AI processing if WFO fails
     }
 
-    // No more confirmation handling needed - we create directly    // Try to use Groq AI (will fall back to mock if blocked by firewall)
+    // Try to use Groq AI (will fall back to mock if blocked by firewall)
     try {
       // NOTE: Corporate firewall may block external AI services
       // Mock responses will be used as primary feature in that case
@@ -142,6 +131,9 @@ app.on('message', async ({ send, stream, activity }) => {
         
         // Check for moment creation opportunities
         const momentResult = await handleMomentDetection(activity, response.content);
+        
+        // Check for WFO data in LLM response
+        await handleWFODetection(activity, response.content, userId);
         
         // If moment detection needs confirmation, send that message instead
         if (momentResult && momentResult.needsConfirmation) {
@@ -185,6 +177,9 @@ app.on('message', async ({ send, stream, activity }) => {
         
         // Check for moment creation opportunities
         const momentResult = await handleMomentDetection(activity, fullResponse);
+        
+        // Check for WFO data in LLM response
+        await handleWFODetection(activity, fullResponse, userId);
         
         // If moment detection needs confirmation, send that message
         if (momentResult && momentResult.needsConfirmation) {
@@ -271,6 +266,88 @@ app.on('message.submit.feedback', async ({ activity }) => {
 // ==========================================
 // MOMENT DETECTION AND CREATION
 // ==========================================
+
+// ==========================================
+// WFO DETECTION AND PROCESSING
+// ==========================================
+
+async function handleWFODetection(activity, botResponse, userId) {
+  try {
+    // Check if user is in WFO conversation
+    if (!global.wfoHandler || !global.wfoHandler.getUserState(userId)) {
+      return; // Not in WFO conversation
+    }
+
+    console.log('[WFO] Checking LLM response for WFO data:', botResponse);
+    console.log('[WFO] Original user message:', activity.text);
+    
+    // Enhanced parsing: Look for office days in both user message and bot response
+    const userMessage = activity.text.toLowerCase();
+    const botMessage = botResponse.toLowerCase();
+    
+    let officeDays = [];
+    
+    // Parse "Mon to Wed" format from user message
+    if (userMessage.includes('mon to wed') || userMessage.includes('monday to wednesday')) {
+      officeDays = ['monday', 'tuesday', 'wednesday'];
+    } else if (userMessage.includes('tue to thu') || userMessage.includes('tuesday to thursday')) {
+      officeDays = ['tuesday', 'wednesday', 'thursday'];
+    } else if (userMessage.includes('wed to fri') || userMessage.includes('wednesday to friday')) {
+      officeDays = ['wednesday', 'thursday', 'friday'];
+    } else {
+      // Parse individual days from user message or bot response
+      const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+      const dayAbbreviations = ['mon', 'tue', 'wed', 'thu', 'fri'];
+      
+      days.forEach((day, index) => {
+        const abbrev = dayAbbreviations[index];
+        if (userMessage.includes(day) || userMessage.includes(abbrev) || 
+            botMessage.includes(day) || botMessage.includes(abbrev)) {
+          officeDays.push(day);
+        }
+      });
+    }
+    
+    // Check for confirmation patterns in bot response
+    const hasConfirmation = (botMessage.includes('office') || botMessage.includes('confirm')) && 
+                           (officeDays.length > 0 || botMessage.includes('monday') || botMessage.includes('tuesday') || botMessage.includes('wednesday'));
+    
+    if (hasConfirmation || officeDays.length > 0) {
+      console.log('[WFO] Found WFO data - Office days:', officeDays);
+      
+      // Create WFO data structure
+      const wfoData = {
+        week_start_date: '2025-11-11', // Default week
+        monday_status: officeDays.includes('monday') ? 'office' : 'home',
+        tuesday_status: officeDays.includes('tuesday') ? 'office' : 'home',
+        wednesday_status: officeDays.includes('wednesday') ? 'office' : 'home',
+        thursday_status: officeDays.includes('thursday') ? 'office' : 'home',
+        friday_status: officeDays.includes('friday') ? 'office' : 'home',
+        collection_method: 'weekly'
+      };
+      
+      console.log('[WFO] Extracted WFO data:', wfoData);
+      
+      // Save to WFO API (DB only)
+      try {
+        await global.wfoHandler.saveWFOData(userId, wfoData);
+        console.log('[WFO] Successfully saved WFO data to database');
+        
+        // Clear conversation state
+        global.wfoHandler.clearUserState(userId);
+        
+      } catch (error) {
+        console.error('[WFO] Error saving WFO data:', error.message);
+        console.error('[WFO] Full error:', error);
+      }
+    } else {
+      console.log('[WFO] No WFO data found in messages');
+    }
+    
+  } catch (error) {
+    console.error('[WFO] Error in WFO detection:', error);
+  }
+}
 
 async function handleMomentDetection(activity, botResponse) {
   try {
