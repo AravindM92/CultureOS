@@ -1,0 +1,16 @@
+Enterprise-Grade Architecture
+🏗️ Technical Stack
+🧠 AI Layer
+Groq AI:
+Ultra-fast LLM processing with sub-second response times
+⚡ Backend
+FastAPI:
+High-performance, async Python framework with automatic API documentation
+💾 Database
+SQLite:
+Lightweight, reliable, and easily scalable to PostgreSQL/MySQL
+🖥️ Frontend
+Microsoft Teams:
+Native integration with enterprise communication platform
+🛡️ Security & Compliance Framework
+Enterprise-grade security with GDPR compliance, SOC 2 readiness, and comprehensive audit trails. All user data collection requires explicit consent with detailed Terms & Conditions acceptance.

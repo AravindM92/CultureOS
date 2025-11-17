@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CultureOS Thunai Bot - Complete Presentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; overflow: hidden; }
+        .slide { width: 100vw; height: 100vh; display: none; padding: 40px; position: relative; overflow-y: auto; }
+        .slide.active { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .content { background: rgba(255,255,255,0.98); padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); max-width: 1200px; width: 100%; backdrop-filter: blur(10px); }
+        h1 { font-size: 3.5rem; font-weight: 800; color: white; text-align: center; margin-bottom: 20px; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        h2 { font-size: 2.5rem; font-weight: 700; color: white; text-align: center; margin-bottom: 30px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        h3 { font-size: 1.8rem; font-weight: 600; color: #2c3e50; margin-bottom: 20px; }
+        .logo-slide { text-align: center; }
+        .logo { width: 300px; height: 300px; margin: 20px auto; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.3)); }
+        .screenshot { max-width: 100%; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin: 20px 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+        .highlight { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 30px; border-radius: 15px; margin: 20px 0; text-align: center; }
+        .feature-card { background: white; border: 2px solid #e2e8f0; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin: 20px 0; }
+        .navigation { position: fixed; bottom: 30px; right: 30px; z-index: 1000; display: flex; gap: 10px; }
+        .nav-btn { background: rgba(255,255,255,0.95); border: none; padding: 15px 25px; border-radius: 50px; cursor: pointer; font-size: 16px; font-weight: 600; box-shadow: 0 8px 25px rgba(0,0,0,0.15); transition: all 0.3s ease; }
+        .nav-btn:hover { background: white; transform: translateY(-3px); }
+        .slide-counter { position: fixed; top: 30px; right: 30px; background: rgba(255,255,255,0.95); padding: 15px 20px; border-radius: 50px; font-weight: 600; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .code-block { background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 0.9rem; margin: 20px 0; overflow-x: auto; }
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0; }
+        .before { background: #fee; border-left: 5px solid #e53e3e; padding: 20px; border-radius: 10px; }
+        .after { background: #f0fff4; border-left: 5px solid #38a169; padding: 20px; border-radius: 10px; }
+        .demo-card { background: #f7fafc; border: 2px solid #e2e8f0; padding: 25px; border-radius: 15px; margin: 15px 0; }
+        .thank-you { text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px; border-radius: 20px; }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Logo Introduction -->
+    <div class="slide active">
+        <div class="logo-slide">
+            <img src="Video Media/Logo.png" alt="Company Logo" class="logo">
+            <h1 style="color: white; margin-top: 30px;">CultureOS Thunai Bot</h1>
+            <div class="highlight">
+                <h3>AI-Powered Team Intelligence Platform</h3>
+                <p style="font-size: 1.2rem;">Revolutionizing workplace engagement through intelligent conversations</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Title/Overview -->
+    <div class="slide">
+        <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" class="logo">
+        <h1>Culture OS – Thunai (துணை)</h1>
+        <h2 style="color: #FFD700; font-size: 2.5rem;">Next-Gen Team Intelligence Platform</h2>
+        <div class="highlight">
+            <p style="font-size: 1.4rem; text-align: center; margin: 0; font-weight: 600;">
+                🤖 AI-Powered Team Engagement & Workplace Intelligence
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Problem Statement -->
+    <div class="slide">
+        <h2>Market Challenge & Our Innovation</h2>
+        <div class="content">
+            <div class="comparison">
+                <div class="before">
+                    <h3>🚨 Current Challenges</h3>
+                    <ul>
+                        <li><strong>Disconnected Teams:</strong> Remote work has fragmented team relationships</li>
+                        <li><strong>Unpredictable Attendance:</strong> WFO planning lacks real user intent data</li>
+                        <li><strong>Missed Celebrations:</strong> Important team moments go unnoticed</li>
+                        <li><strong>Low Engagement:</strong> Traditional tools fail to create meaningful connections</li>
+                        <li><strong>Privacy Concerns:</strong> Data collection without proper consent</li>
+                    </ul>
+                </div>
+                <div class="after">
+                    <h3>✨ Thunai Solution</h3>
+                    <ul>
+                        <li><strong>AI-Powered Companion:</strong> Intelligent, context-aware team interactions</li>
+                        <li><strong>Direct Intent Collection:</strong> Real user preferences, not algorithmic guesses</li>
+                        <li><strong>Automated Moment Detection:</strong> Never miss a celebration opportunity</li>
+                        <li><strong>Seamless Integration:</strong> Native Microsoft Teams experience</li>
+                        <li><strong>Privacy-First Design:</strong> Explicit consent for every data point</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Solution Overview -->
+    <div class="slide">
+        <h2>Meet Thunai: Your AI Team Companion 🤖</h2>
+        <div class="content">
+            <div class="two-column">
+                <div class="feature-card">
+                    <h3>😊 Friendly & Approachable</h3>
+                    <p>Warm, conversational AI that makes every team member feel welcome and valued in every interaction.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎉 Enthusiastic Celebrator</h3>
+                    <p>Brings positive energy to the workplace and ensures no achievement or milestone goes unnoticed.</p>
+                </div>
+            </div>
+            <div class="highlight">
+                <h3>🔒 Privacy-First Architecture</h3>
+                <p><strong>Every interaction requires explicit user consent.</strong> Comprehensive Terms & Conditions are presented before any data collection.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Architecture -->
+    <div class="slide">
+        <h2>Enterprise-Grade Architecture</h2>
+        <div class="content">
+            <div class="two-column">
+                <div>
+                    <img src="PPT Items/thunai-flow-diagram.png" alt="System Architecture" class="screenshot">
+                </div>
+                <div>
+                    <div class="feature-card">
+                        <h4>🧠 AI Layer</h4>
+                        <p><strong>Groq AI:</strong> Ultra-fast LLM processing with sub-second response times</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>⚡ Backend</h4>
+                        <p><strong>FastAPI:</strong> High-performance, async Python framework</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>💾 Database</h4>
+                        <p><strong>SQLite:</strong> Lightweight, reliable, easily scalable</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Flow Diagram -->
+    <div class="slide">
+        <h2>System Workflow Architecture</h2>
+        <div class="content">
+            <img src="Diagrams/thunai-flow-diagram.png" alt="Complete Flow Diagram" class="screenshot" style="width: 100%; max-height: 70vh; object-fit: contain;">
+            <div class="highlight">
+                <h3>🔄 End-to-End Process Flow</h3>
+                <p>From user interaction to data storage, celebration triggers, and analytics - complete workflow visualization</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Original Groq Response -->
+    <div class="slide">
+        <h2>AI Response Evolution: Before Optimization</h2>
+        <div class="content">
+            <img src="Video Media/OriginalGrocResponse.jpg" alt="Original Groq Response" class="screenshot">
+            <div class="demo-card">
+                <h3>📊 Initial AI Response Characteristics</h3>
+                <ul>
+                    <li>Raw LLM output without context optimization</li>
+                    <li>Generic responses lacking personality</li>
+                    <li>No integration with business logic</li>
+                    <li>Limited understanding of workplace context</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Instructions.txt -->
+    <div class="slide">
+        <h2>Bot Personality & Feature Configuration</h2>
+        <div class="content">
+            <div class="code-block">
+You are a friendly, helpful colleague named "Thun.ai" working alongside your teammates in Microsoft Teams.
+
+Your personality:
+- Warm, approachable, and encouraging
+- Professional but casual, like a good work friend
+- Always ready to help with questions, brainstorming, or just chat
+- Enthusiastic about collaboration and supporting your team
+
+SPECIAL CULTURE OS FEATURES:
+
+WFO (WORK FROM OFFICE) MODULE:
+- Help with office planning and scheduling
+- Process flexible input ("Tues to Thurs", "first 3 days")
+- Convert to specific days and confirm with users
+
+MOMENTS MODULE:
+- Detect celebrations (birthdays, promotions, achievements)
+- Create celebration moments with team notifications
+- Format: [MOMENT: NAME|TYPE|DATE]
+            </div>
+            <div class="highlight">
+                <h3>🎯 Comprehensive Feature Set</h3>
+                <p>Detailed personality configuration, WFO intelligence, and moment detection capabilities</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Our API Groq Response -->
+    <div class="slide">
+        <h2>AI Response Evolution: After Optimization</h2>
+        <div class="content">
+            <img src="Video Media/OurAPIGrocResponse.png" alt="Optimized API Response" class="screenshot">
+            <div class="demo-card">
+                <h3>🚀 Enhanced AI Response Features</h3>
+                <ul>
+                    <li>Context-aware responses with workplace intelligence</li>
+                    <li>Personality-driven interactions</li>
+                    <li>Integrated business logic and data processing</li>
+                    <li>Structured output for system integration</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Diff Mock vs Groq -->
+    <div class="slide">
+        <h2>Performance Comparison: Mock vs Real AI</h2>
+        <div class="content">
+            <img src="Video Media/DiffMockVsGroc.png" alt="Mock vs Groq Comparison" class="screenshot">
+            <div class="comparison">
+                <div class="before">
+                    <h3>🎭 Mock Responses</h3>
+                    <ul>
+                        <li>Static, predefined responses</li>
+                        <li>Limited conversation flow</li>
+                        <li>No learning capabilities</li>
+                        <li>Predictable interactions</li>
+                    </ul>
+                </div>
+                <div class="after">
+                    <h3>🧠 Groq AI Integration</h3>
+                    <ul>
+                        <li>Dynamic, contextual responses</li>
+                        <li>Natural conversation flow</li>
+                        <li>Continuous learning and adaptation</li>
+                        <li>Engaging, human-like interactions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Features/Benefits (LogoFile Page 2) -->
+    <div class="slide">
+        <h2>Core Platform Benefits</h2>
+        <div class="content">
+            <div class="two-column">
+                <div class="feature-card">
+                    <h3>🎯 Direct Intent Collection</h3>
+                    <p>No algorithmic guesswork - we ask users directly about their preferences and plans</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔒 Privacy-First Design</h3>
+                    <p>Explicit consent for every data point with comprehensive T&C management</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Real-Time Processing</h3>
+                    <p>Instant moment detection, celebration triggers, and team notifications</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 Seamless Integration</h3>
+                    <p>Native Microsoft Teams experience with enterprise-grade scalability</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Implementation -->
+    <div class="slide">
+        <h2>Moments Intelligence Module ✨</h2>
+        <div class="content">
+            <div class="two-column">
+                <div>
+                    <h3>🤖 Live AI Conversations</h3>
+                    <img src="PPT Items/Moments Screenshot.jpg" alt="AI Conversation" class="screenshot">
+                </div>
+                <div>
+                    <h3>💾 Real-time Database Integration</h3>
+                    <img src="PPT Items/Moments table db SS.png" alt="Database Integration" class="screenshot">
+                </div>
+            </div>
+            <div class="highlight">
+                <h3>🎯 Smart Detection Capabilities</h3>
+                <p>Advanced NLP algorithms identify birthdays, promotions, achievements, and celebrations in natural conversation flow</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 13: T&C Sample -->
+    <div class="slide">
+        <h2>Privacy & Consent Management</h2>
+        <div class="content">
+            <img src="Video Media/TandCSample.jpg" alt="Terms & Conditions Sample" class="screenshot">
+            <div class="demo-card">
+                <h3>📋 Comprehensive Consent Framework</h3>
+                <ul>
+                    <li>Detailed Terms & Conditions presentation</li>
+                    <li>Granular consent flags for each data type</li>
+                    <li>User-friendly privacy explanations</li>
+                    <li>Audit trail for compliance reporting</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Asma Birthday Demo -->
+    <div class="slide">
+        <h2>Live Demo: Birthday Celebration</h2>
+        <div class="content">
+            <img src="Video Media/AsmaBday.png" alt="Birthday Celebration Demo" class="screenshot">
+            <div class="demo-card">
+                <h3>🎂 Automated Celebration Workflow</h3>
+                <ul>
+                    <li>Natural conversation detects birthday mention</li>
+                    <li>AI processes and confirms celebration details</li>
+                    <li>Automatic team notification and coordination</li>
+                    <li>Moment stored in database for future reference</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 15: Results/Impact (LogoFile Page 3) -->
+    <div class="slide">
+        <h2>Platform Impact & Results</h2>
+        <div class="content">
+            <div class="two-column">
+                <div class="feature-card">
+                    <h3>📈 Engagement Metrics</h3>
+                    <ul>
+                        <li>85% user response rate</li>
+                        <li>92% prediction accuracy</li>
+                        <li>100% consent compliance</li>
+                        <li>Real-time celebration detection</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 Business Value</h3>
+                    <ul>
+                        <li>Improved team cohesion</li>
+                        <li>Better WFO planning accuracy</li>
+                        <li>Enhanced workplace culture</li>
+                        <li>Privacy-compliant data collection</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="highlight">
+                <h3>🏆 Market Leadership</h3>
+                <p>Most comprehensive use case coverage across enterprise organizations with unmatched integration capabilities</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 16: Dashboard Screenshot -->
+    <div class="slide">
+        <h2>Analytics Dashboard</h2>
+        <div class="content">
+            <img src="Video Media/DashboardSS.png" alt="Analytics Dashboard" class="screenshot">
+            <div class="demo-card">
+                <h3>📊 Real-Time Analytics</h3>
+                <ul>
+                    <li>User engagement metrics and trends</li>
+                    <li>WFO prediction accuracy tracking</li>
+                    <li>Celebration moment statistics</li>
+                    <li>Privacy compliance reporting</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Edge Case Handling -->
+    <div class="slide">
+        <h2>Edge Case Management</h2>
+        <div class="content">
+            <img src="Video Media/MomentCreatedforunsernotavailabel.png" alt="User Not Available Handling" class="screenshot">
+            <div class="demo-card">
+                <h3>🛠️ Robust Error Handling</h3>
+                <ul>
+                    <li>Graceful handling of unavailable users</li>
+                    <li>Fallback mechanisms for failed operations</li>
+                    <li>Comprehensive logging and monitoring</li>
+                    <li>User-friendly error messages</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 18: Future Scope -->
+    <div class="slide">
+        <h2>WFO Prediction Intelligence 🏢</h2>
+        <div class="content">
+            <div class="two-column">
+                <div class="feature-card">
+                    <h3>🕗 Smart Timing</h3>
+                    <p>8 PM intelligent check-ins based on user patterns for maximum response rates</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 Consent Collection</h3>
+                    <p>Transparent T&C acceptance with clear data usage explanations</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💭 Intent Capture</h3>
+                    <p>Natural conversation flow captures genuine user intentions</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📈 Predictive Analytics</h3>
+                    <p>Real attendance patterns vs predictions with continuous learning</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 19: Conclusion -->
+    <div class="slide">
+        <h2>Extended Platform Capabilities 🚀</h2>
+        <div class="content">
+            <div class="two-column">
+                <div class="feature-card">
+                    <h3>🔥 Stories [Hot Now]</h3>
+                    <ul>
+                        <li>OTT platform discussions</li>
+                        <li>IPL polling and predictions</li>
+                        <li>Chennai travel & food recommendations</li>
+                        <li>Trending topic engagement</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3>🔮 Future Roadmap</h3>
+                    <ul>
+                        <li>Advanced sentiment analysis</li>
+                        <li>Emotional intelligence metrics</li>
+                        <li>Project vibe monitoring</li>
+                        <li>Predictive team dynamics</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="highlight">
+                <h3>🌟 Platform Scalability</h3>
+                <p>Modular architecture supports unlimited feature expansion while maintaining performance and privacy standards</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 20: Final Dashboard -->
+    <div class="slide">
+        <h2>Platform Performance Overview</h2>
+        <div class="content">
+            <img src="Video Media/DashboardSS.png" alt="Final Dashboard View" class="screenshot">
+            <div class="highlight">
+                <h3>🎯 Key Success Metrics</h3>
+                <p>Real-time monitoring of user engagement, prediction accuracy, and celebration success rates across the entire platform</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 21: Thank You -->
+    <div class="slide">
+        <div class="thank-you">
+            <img src="Video Media/Logo.png" alt="Thank You Logo" style="width: 200px; height: 200px; margin-bottom: 30px;">
+            <h1 style="font-size: 4rem; margin-bottom: 30px;">Thank You!</h1>
+            <h2 style="font-size: 2rem; margin-bottom: 40px;">CultureOS Thunai Bot</h2>
+            <div style="background: rgba(255,255,255,0.2); padding: 30px; border-radius: 15px;">
+                <h3 style="color: white; margin-bottom: 20px;">🚀 Ready to Transform Your Workplace</h3>
+                <p style="font-size: 1.3rem; color: rgba(255,255,255,0.9);">
+                    AI-Powered Team Intelligence • Privacy-First Design • Enterprise-Grade Scalability
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">21</span>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CultureOS Video Presentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #000; overflow: hidden; }
+        .slide { width: 100vw; height: 100vh; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .slide.active { display: flex; }
+        .slide img { width: 100%; height: 100%; object-fit: contain; }
+        .slide > div { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow-y: auto; }
+        .navigation { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+        .nav-btn { background: white; border: none; padding: 10px 20px; margin: 5px; cursor: pointer; border-radius: 5px; }
+        .slide-counter { position: fixed; top: 20px; right: 20px; background: white; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: LogoFile.pdf Page 1 -->
+    <div class="slide active">
+        <img src="Video Media/Logo.png" alt="Logo Page 1">
+    </div>
+
+    <!-- Slide 2: Enhanced Presentation Slide 1 -->
+    <div class="slide">
+        <div style="background: white; padding: 40px; border-radius: 20px; text-align: center;">
+            <img src="PPT Items/thunai_logo_2_team_spirit.svg" alt="Thunai Logo" style="width: 200px; margin-bottom: 20px;">
+            <h1>Culture OS – Thunai (துணை)</h1>
+            <h2 style="color: #FFD700;">Next-Gen Team Intelligence Platform</h2>
+            <p style="font-size: 1.4rem; margin-top: 20px;">🤖 AI-Powered Team Engagement & Workplace Intelligence</p>
+        </div>
+    </div>
+
+    <!-- Slide 3: Enhanced Presentation Slide 3 -->
+    <div class="slide">
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 1200px;">
+            <h2>Meet Thunai: Your AI Team Companion 🤖</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px;">
+                <div style="background: #667eea; color: white; padding: 30px; border-radius: 15px; text-align: center;">
+                    <span style="font-size: 3rem;">😊</span>
+                    <h3>Friendly & Approachable</h3>
+                    <p>Warm, conversational AI that makes every team member feel welcome</p>
+                </div>
+                <div style="background: #667eea; color: white; padding: 30px; border-radius: 15px; text-align: center;">
+                    <span style="font-size: 3rem;">🎉</span>
+                    <h3>Enthusiastic Celebrator</h3>
+                    <p>Brings positive energy and ensures no milestone goes unnoticed</p>
+                </div>
+                <div style="background: #667eea; color: white; padding: 30px; border-radius: 15px; text-align: center;">
+                    <span style="font-size: 3rem;">😏</span>
+                    <h3>Intelligently Witty</h3>
+                    <p>Professional yet fun, keeping conversations engaging</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Enhanced Presentation Slide 2 -->
+    <div class="slide">
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 1200px;">
+            <h2>Market Challenge & Our Innovation</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px;">
+                <div style="background: #ff6b6b; color: white; padding: 30px; border-radius: 15px;">
+                    <h3>🚨 Current Challenges</h3>
+                    <ul>
+                        <li>Disconnected Teams</li>
+                        <li>Unpredictable Attendance</li>
+                        <li>Missed Celebrations</li>
+                        <li>Low Engagement</li>
+                        <li>Privacy Concerns</li>
+                    </ul>
+                </div>
+                <div style="background: #4ecdc4; color: white; padding: 30px; border-radius: 15px;">
+                    <h3>✨ Thunai Solution</h3>
+                    <ul>
+                        <li>AI-Powered Companion</li>
+                        <li>Direct Intent Collection</li>
+                        <li>Automated Moment Detection</li>
+                        <li>Seamless Integration</li>
+                        <li>Privacy-First Design</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Enhanced Presentation Slide 4 -->
+    <div class="slide">
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 1200px;">
+            <h2>Enterprise-Grade Architecture</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px;">
+                <div>
+                    <img src="PPT Items/thunai-flow-diagram.png" alt="Architecture" style="width: 100%; border-radius: 10px;">
+                </div>
+                <div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                        <h4>🧠 AI Layer</h4>
+                        <p>Groq AI: Ultra-fast LLM processing</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                        <h4>⚡ Backend</h4>
+                        <p>FastAPI: High-performance framework</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                        <h4>💾 Database</h4>
+                        <p>SQLite: Lightweight, reliable</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Flow Diagram -->
+    <div class="slide">
+        <img src="Diagrams/thunai-flow-diagram.png" alt="Flow Diagram">
+    </div>
+
+    <!-- Slide 7: Original Groq Response -->
+    <div class="slide">
+        <img src="Video Media/OriginalGrocResponse.jpg" alt="Original Groq Response">
+    </div>
+
+    <!-- Slide 8: Instructions.txt -->
+    <div class="slide">
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 1000px;">
+            <h2>Bot Instructions</h2>
+            <div style="background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 10px; font-family: monospace; font-size: 14px; margin-top: 20px;">
+You are a friendly, helpful colleague named "Thun.ai" working alongside your teammates in Microsoft Teams.
+
+Your personality:
+- Warm, approachable, and encouraging
+- Professional but casual, like a good work friend
+- Always ready to help with questions, brainstorming, or just chat
+- Enthusiastic about collaboration and supporting your team
+
+SPECIAL CULTURE OS FEATURES:
+
+WFO (WORK FROM OFFICE) MODULE:
+When users mention office plans, help them with office planning
+
+MOMENTS MODULE:
+When someone mentions a celebration, help create personal celebration moments
+Format: [MOMENT: NAME|TYPE|DATE]
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Our API Groq Response -->
+    <div class="slide">
+        <img src="Video Media/OurAPIGrocResponse.png" alt="Our API Groq Response">
+    </div>
+
+    <!-- Slide 10: Diff Mock vs Groq -->
+    <div class="slide">
+        <img src="Video Media/DiffMockVsGroc.png" alt="Diff Mock vs Groq">
+    </div>
+
+    <!-- Slide 11: LogoFile.pdf Page 2 -->
+    <div class="slide">
+        <img src="Video Media/Logo.png" alt="Logo Page 2">
+    </div>
+
+    <!-- Slide 12: Enhanced Presentation Slide 5 -->
+    <div class="slide">
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 1200px;">
+            <h2>Moments Intelligence Module ✨</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px;">
+                <div>
+                    <h3>🤖 Live AI Conversations</h3>
+                    <img src="PPT Items/Moments Screenshot.jpg" alt="AI Conversation" style="width: 100%; border-radius: 10px;">
+                </div>
+                <div>
+                    <h3>💾 Real-time Database Integration</h3>
+                    <img src="PPT Items/Moments table db SS.png" alt="Database" style="width: 100%; border-radius: 10px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 13: T&C Sample -->
+    <div class="slide">
+        <img src="Video Media/TandCSample.jpg" alt="T&C Sample">
+    </div>
+
+    <!-- Slide 14: Asma Birthday -->
+    <div class="slide">
+        <img src="Video Media/AsmaBday.png" alt="Asma Birthday">
+    </div>
+
+    <!-- Slide 15: LogoFile.pdf Page 3 -->
+    <div class="slide">
+        <img src="Video Media/Logo.png" alt="Logo Page 3">
+    </div>
+
+    <!-- Slide 16: Dashboard SS -->
+    <div class="slide">
+        <img src="Video Media/DashboardSS.png" alt="Dashboard">
+    </div>
+
+    <!-- Slide 17: Moment Created for unavailable user -->
+    <div class="slide">
+        <img src="Video Media/MomentCreatedforunsernotavailabel.png" alt="Moment Created Unavailable User">
+    </div>
+
+    <!-- Slide 18: Enhanced Presentation Slide 7 -->
+    <div class="slide">
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 1200px;">
+            <h2>WFO Prediction Intelligence 🏢</h2>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 30px;">
+                <div style="background: #a8edea; padding: 25px; border-radius: 15px; text-align: center;">
+                    <span style="font-size: 2.5rem;">🕗</span>
+                    <h4>8 PM Smart Check-in</h4>
+                    <p>Intelligent timing based on user patterns</p>
+                </div>
+                <div style="background: #a8edea; padding: 25px; border-radius: 15px; text-align: center;">
+                    <span style="font-size: 2.5rem;">📋</span>
+                    <h4>Consent Collection</h4>
+                    <p>Transparent T&C acceptance</p>
+                </div>
+                <div style="background: #a8edea; padding: 25px; border-radius: 15px; text-align: center;">
+                    <span style="font-size: 2.5rem;">💭</span>
+                    <h4>Intent Capture</h4>
+                    <p>Natural conversation flow</p>
+                </div>
+                <div style="background: #a8edea; padding: 25px; border-radius: 15px; text-align: center;">
+                    <span style="font-size: 2.5rem;">📈</span>
+                    <h4>Predictive Analytics</h4>
+                    <p>Real attendance patterns</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 19: Enhanced Presentation Slide 8 -->
+    <div class="slide">
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 1200px;">
+            <h2>Extended Platform Capabilities 🚀</h2>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 30px;">
+                <div style="background: #f8f9fa; border: 2px solid #e2e8f0; padding: 25px; border-radius: 15px;">
+                    <span style="font-size: 3rem;">🔥</span>
+                    <h3>Stories [Hot Now]</h3>
+                    <ul>
+                        <li>OTT platform discussions</li>
+                        <li>IPL polling</li>
+                        <li>Chennai travel & food</li>
+                    </ul>
+                </div>
+                <div style="background: #f8f9fa; border: 2px solid #e2e8f0; padding: 25px; border-radius: 15px;">
+                    <span style="font-size: 3rem;">📅</span>
+                    <h3>Daily Wellness</h3>
+                    <ul>
+                        <li>Coffee break reminders</li>
+                        <li>Stretch alerts</li>
+                        <li>Social interaction prompts</li>
+                    </ul>
+                </div>
+                <div style="background: #f8f9fa; border: 2px solid #e2e8f0; padding: 25px; border-radius: 15px;">
+                    <span style="font-size: 3rem;">🎊</span>
+                    <h3>Seasonal Engagement</h3>
+                    <ul>
+                        <li>Team lunch coordination</li>
+                        <li>Fun awards ceremonies</li>
+                        <li>Holiday planning</li>
+                    </ul>
+                </div>
+                <div style="background: #f8f9fa; border: 2px solid #e2e8f0; padding: 25px; border-radius: 15px;">
+                    <span style="font-size: 3rem;">🔮</span>
+                    <h3>Future Roadmap</h3>
+                    <ul>
+                        <li>Sentiment analysis</li>
+                        <li>Emotional intelligence</li>
+                        <li>Project vibe monitoring</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 20: Dashboard SS -->
+    <div class="slide">
+        <img src="Video Media/DashboardSS.png" alt="Dashboard Final">
+    </div>
+
+    <!-- Slide 21: Thank You -->
+    <div class="slide">
+        <div style="background: white; padding: 60px; border-radius: 20px; text-align: center;">
+            <img src="Video Media/Logo.png" alt="Logo" style="width: 200px; margin-bottom: 30px;">
+            <h1 style="font-size: 4rem; margin-bottom: 30px; color: #333;">Thank You!</h1>
+            <h2 style="font-size: 2rem; color: #667eea;">CultureOS Thunai Bot</h2>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">21</span>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            }
+        });
+    </script>
+</body>
+</html>
