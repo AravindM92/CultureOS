@@ -1,13 +1,14 @@
 // Test Groq API directly
 const { GroqChatModel } = require("../src/app/groqChatModel");
+const { groqApiKey, groqModelName } = require("../src/config");
 
 async function testGroq() {
     console.log("Testing Groq API with llama-3.1-8b-instant...");
     
     try {
         const groqModel = new GroqChatModel({
-            apiKey: "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",
-            model: "llama-3.1-8b-instant"
+            apiKey: groqApiKey,
+            model: groqModelName
         });
 
         const messages = [
