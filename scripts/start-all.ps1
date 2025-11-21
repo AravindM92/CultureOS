@@ -3,11 +3,12 @@ $scriptDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path
 
 Write-Host "Starting CultureOS Services..." -ForegroundColor Green
 
-# Start Python API (ThunAI)
+# Start Python API (ThunAI) with venv activation
 Write-Host "Starting ThunAI API (8000)..." -ForegroundColor Yellow
 $apiJob = Start-Job -ScriptBlock {
     param($dir)
     Set-Location "$dir\thunai-api\thunai-api"
+    & .\venv\Scripts\Activate.ps1
     python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 } -ArgumentList $scriptDir -Name "ThunaiAPI"
 
