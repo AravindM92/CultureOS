@@ -17,6 +17,7 @@ Write-Host "Starting WFO Prediction API (8001)..." -ForegroundColor Yellow
 $wfoJob = Start-Job -ScriptBlock {
     param($dir)
     Set-Location "$dir\wfo-prediction-api"
+    & .\venv\Scripts\Activate.ps1
     python -m uvicorn main:app --host 0.0.0.0 --port 8001 --reload
 } -ArgumentList $scriptDir -Name "WFOAPI"
 
