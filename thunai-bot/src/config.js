@@ -3,7 +3,7 @@ const config = {
   MicrosoftAppType: process.env.BOT_TYPE,
   MicrosoftAppTenantId: process.env.TENANT_ID,
   MicrosoftAppPassword: process.env.CLIENT_SECRET,
-  groqApiKey: process.env.GROQ_API_KEY || "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", // Updated API key
+  groqApiKey: "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", // Updated API key
   groqModelName: process.env.GROQ_MODEL_NAME || "llama-3.1-8b-instant",
   
   // API Configuration
